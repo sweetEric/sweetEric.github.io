@@ -1,11 +1,14 @@
-- url: "http://jekyllrb.com/"
-  title: "Jekyll"
+- url: "https://github.com/sweetEric"
+  title: "SweetEric"
 
-- url: "http://getbootstrap.com/"
-  title: "Bootstrap"
+# - url: "http://jekyllrb.com/"
+  # title: "Jekyll"
 
-- url: "https://github.com/"
-  title: "Github"
+# - url: "http://getbootstrap.com/"
+  # title: "Bootstrap"
 
-- url: "https://github.com/zxixia/jekyll-xixia"
-  title: "Xixia"      
+# - url: "https://github.com/"
+  # title: "Github"
+
+# - url: "https://github.com/zxixia/jekyll-xixia"
+  # title: "Xixia"      
