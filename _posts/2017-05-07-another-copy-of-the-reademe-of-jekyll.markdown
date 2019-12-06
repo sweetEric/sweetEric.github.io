@@ -2,7 +2,7 @@
 layout: post
 title:  "Another copy of the Readme of Jekyll!"
 date:   2017-09-05 14:10:51 +0800
-categories: Jekyll
+categories: 设计模式
 tags: Jekyll
 description: This is just another copy of the read me page of Jekyll.
 ---
