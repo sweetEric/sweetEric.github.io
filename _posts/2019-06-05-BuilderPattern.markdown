@@ -2,9 +2,9 @@
 layout: post
 title:  "建造者模式"
 date:   2019-06-05 14:10:51 +0800
-categories: JAVA
-tags: 设计模式
-description: This is just another copy of the read me page of Jekyll.
+categories: 设计模式
+tags: 常看
+description: Java设计模式
 ---
 
 # 建造者模式
@@ -15,7 +15,7 @@ description: This is just another copy of the read me page of Jekyll.
 
 建造者模式的四个角色1） Product（产品角色）：一个具体的产品对象2） Builder（抽象建者）：创建一个 Product对象的各个部件指定的接口/抽象类3） Concrete Builder（具体建造者）：实现接口，构建和装配各个部件，
 4） Director（指挥者）：构建一个使用 Builder接口的对象。它主要是用于创建一个复杂的对象，它主要有两个作用，一是：隔高了客户与对象的生产过程，二是负贡控制产品对象的生产过程
-![建造者UmL](./建造UML.png)
+![建造者UmL](./BuilderPattern.png)
 
 ### 建造者模式在JDK的应用和源码分析
 java.lang.String.Builder中的建造者模式
