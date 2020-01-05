@@ -1,0 +1,109 @@
+I"2<h1 id="js中元素属性的获取和设置">JS中元素属性的获取和设置</h1>
+<h4 id="jquery对象和dom对象的相互转换">jQuery对象和DOM对象的相互转换</h4>
+<p><strong>$("#id")-----(jQuery对象)<br />
+jQuery –&gt;DOM-----$("#id")[0] <br />
+document.getElementById("#id")-----(DOM对象) <br />
+DOM–&gt;jQuery-----$(document.getElementById("#id"))</strong></p>
+
+<h3 id="一-获取元素节点">一. <strong>获取元素节点</strong></h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>id</th>
+      <th>method</th>
+      <th>type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>document.getElementById()</td>
+      <td>DOM</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>document.getElementsByTagName()</td>
+      <td>DOM</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>document.getElementsByClassName()</td>
+      <td>DOM</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>$(“_tagName .class  #id”).first()</td>
+      <td>JQuery</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>$(“_tagName .class  #id”).last()</td>
+      <td>JQuery</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>$(“_tagName .class  #id”).eq(_index)</td>
+      <td>JQuery</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>$(“_tagName .class  #id”).filter(“_tagName .class  #id”)</td>
+      <td>JQuery</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>$(“_tagName .class  #id”).not(“_tagName .class  #id”)</td>
+      <td>JQuery</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>$(“_tagName .class  #id”).parent()</td>
+      <td>JQuery</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="二-获取和设置元素样式">二. <strong>获取和设置元素样式</strong></h3>
+<h4 id="1-获取元素样式">1. 获取元素样式</h4>
+
+<p>| id | method                                                             | type   |
+|—-|——————————————————————–|——–|
+| 1  | $(“#id”).css(“_property”)                                   | JQuery |
+| 2  | $(“#id”).width()/heigth()                                  | JQuery |
+| 3  | $(“#id”).style._property                                     | JQuery |
+| 4  | document.getElementById(“#id”).style                          | DOM    |
+| 5  | document.getElementById(“#id”).getAttribute(“_property”) | DOM    | <br />
+<br /></p>
+
+<h4 id="2-设置元素样式">2. 设置元素样式</h4>
+
+<p>| id | method                                                           | type   |
+|—-|——————————————————————|——–|
+| 1  | $(“#id”).css(“_property”,”_val”)                         | JQuery |
+| 2  | $(“#id”).width                                               | JQuery |
+| 3  | $(“#id”).style._property                                   | JQuery |
+| 4  | $(“#id”).attr(“_property”, “_val”)                       | JQuery |
+| 5  | document.getElementById(“#id”).style                        | DOM    |
+| 6  | document.getElementById(“#id”).setAttribute(“_property”) | DOM    |
+<br /></p>
+
+<h3 id="三-设置或返回内容">三. <strong>设置或返回内容</strong></h3>
+
+<p>| id | method                                 | type   |
+|—-|—————————————-|——–|
+| 1  | text() - 设置或返回所选元素的文本内容             | JQuery |
+| 2  | val() - 设置或返回表单字段的值                 | JQuery |
+| 3  | html() - 设置或返回所选元素的内容  (包括 HTML 标记) | JQuery |
+| 4  | append() - 在被选元素的结尾插入内容  (包括 HTML 标记)  | JQuery |
+| 5  | prepend() - 在被选元素的开头插入内容  (包括 HTML 标记) | JQuery |
+| 6  | after() - 在被选元素之后插入内容  (包括 HTML 标记)    | JQuery |
+| 7  | before() - 在被选元素之前插入内容  (包括 HTML 标记)   | JQuery |
+| 8  | innerHTML - 设置或返回所选元素的文本内容            | DOM    | <br />
+<br /></p>
+
+<h3 id="四-要点归纳">四. <strong>要点归纳</strong></h3>
+<p>1.JQuery 底下封装和实现了大部分DOM的方法, 可以尽量使用JQuery来代替DOM操作
+2.JQuery 由于地下大部分使用DOM的方法达到局部刷新的效果，对性能消耗较大，这时可以选择reat、vue等通过操作数据(状态)来使页面渲染的新框架</p>
+
+:ET

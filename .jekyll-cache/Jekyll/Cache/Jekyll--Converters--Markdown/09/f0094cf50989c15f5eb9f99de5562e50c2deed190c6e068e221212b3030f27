@@ -1,0 +1,93 @@
+I"<h1 id="js中元素属性的获取和设置">JS中元素属性的获取和设置</h1>
+<p>jQuery对象和DOM对象的相互转换    <br />
+<em>**  <br />
+$(“#id”)-----(jQuery对象)<br />
+jQuery –&gt;DOM-----$(“#id”)[0] <br />
+document.getElementById(“#id”)-----(DOM对象) <br />
+DOM–&gt;jQuery-----$(document.getElementById(“#id”)) <br />
+**</em></p>
+<h2 id="一-获取和设置元素样式">一. 获取和设置元素样式</h2>
+<h4 id="1元素样式">1元素样式</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>id</th>
+      <th>method</th>
+      <th>type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>$(“#id”).css(“_property”)</td>
+      <td>Jquery</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>$(“#id”).width()/heigth()</td>
+      <td>Jquery</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>$(“#id”).style._property</td>
+      <td>Jquery</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>document.getElementById(“#id”).style</td>
+      <td>DOM</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>document.getElementById(“#id”).getAttribute(“_property”)</td>
+      <td>DOM</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="2设置元素样式">2设置元素样式</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>id</th>
+      <th>method</th>
+      <th>type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>$(“#id”).css(“_property”,”_val”)</td>
+      <td>Jquery</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>$(“#id”).width</td>
+      <td>Jquery</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>$(“#id”).style._property</td>
+      <td>Jquery</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>$(“#id”).attr(“_property”, “_val”)</td>
+      <td>Jquery</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>document.getElementById(“#id”).style</td>
+      <td>DOM</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>document.getElementById(“#id”).setAttribute(“_property”)</td>
+      <td>DOM</td>
+    </tr>
+  </tbody>
+</table>
+
+:ET
