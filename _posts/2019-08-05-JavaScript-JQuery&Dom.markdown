@@ -1,19 +1,26 @@
 ---
 layout: post
-title:  "JQuery和DOM操作"
+title:  "JQuery 和 DOM 操作"
 date:   2019-07-10 20:35:53 +0400
 categories: JavaScript
-tags: 归纳
-author: LWX
+tags: summary
+author: Eric
 description: JavaScript JQuery和DOM操作
 ---
 
+<!-- summary pratice -->
 # JS中元素属性的获取和设置    
+-----   
+
+
 #### jQuery对象和DOM对象的相互转换      
-**\$(\"#id\")\-\-\-\-\-(jQuery对象)  
+\$(\"#id\")\-\-\-\-\-(jQuery对象)  
 jQuery -->DOM\-\-\-\-\-\$(\"#id\")[0]   
 document.getElementById(\"#id\")\-\-\-\-\-(DOM对象)   
-DOM-->jQuery\-\-\-\-\-\$(document.getElementById(\"#id\"))**   
+DOM-->jQuery\-\-\-\-\-\$(document.getElementById(\"#id\"))   
+
+-----    
+
 
 ### 一. **获取元素节点**   
 
@@ -29,7 +36,8 @@ DOM-->jQuery\-\-\-\-\-\$(document.getElementById(\"#id\"))**
 | 8  | $\("\_tagName \.class  \#id"\)\.not\("\_tagName \.class  \#id"\)    | JQuery |
 | 9  | $\("\_tagName \.class  \#id"\)\.parent\(\)                          | JQuery |
 
-<br/> 
+
+-----   
 
 ### 二. **获取和设置元素样式**    
 #### 1. 获取元素样式  
@@ -41,8 +49,11 @@ DOM-->jQuery\-\-\-\-\-\$(document.getElementById(\"#id\"))**
 | 3  | $\("#id")\.style._property                                     | JQuery |
 | 4  | document\.getElementById\("#id")\.style                          | DOM    |
 | 5  | document\.getElementById("#id")\.getAttribute("_property") | DOM    |     
-  
- 
+    
+    
+<br>   
+
+
 #### 2. 设置元素样式   
 
 | id | method                                                           | type   |
@@ -54,7 +65,8 @@ DOM-->jQuery\-\-\-\-\-\$(document.getElementById(\"#id\"))**
 | 5  | document\.getElementById("#id")\.style                        | DOM    |
 | 6  | document\.getElementById("#id")\.setAttribute("_property") | DOM    |    
 
-<br/>    
+
+-----    
 
 ### 三. **设置或返回内容**
 
@@ -69,11 +81,14 @@ DOM-->jQuery\-\-\-\-\-\$(document.getElementById(\"#id\"))**
 | 7  | before() - 在被选元素之前插入内容  (包括 HTML 标记)   | JQuery |
 | 8  | innerHTML \- 设置或返回所选元素的文本内容            | DOM    |   
 
-<br/>
+
+-----   
 
 ### 四. **要点归纳**    
 **1.JQuery 底下封装和实现了大部分DOM的方法, 可以尽量使用JQuery来代替DOM操作**     
 **2.JQuery 由于地下大部分使用DOM的方法达到局部刷新的效果，对性能消耗较大，这时可以选择reat、vue等通过操作数据(状态)来使页面渲染的新框架**
+
+-----   
 
 	
 		
