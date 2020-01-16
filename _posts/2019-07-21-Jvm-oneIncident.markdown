@@ -5,7 +5,7 @@ date:   2019-07-21 21:10:51 +0800
 categories: JVM
 tags: pratice
 author: Eric
-description: 生产项目异常下线，且呈现周期性
+description: 生产项目异常下线, 且呈现周期性
 ---
 
 <!-- summary pratice -->
@@ -16,7 +16,7 @@ description: 生产项目异常下线，且呈现周期性
 ## 一、生产出现服务器异常下线
 1. 生产环境
 环境:window server2008 R2 x64/4G
-阿里云监控连接数下降，CPU、内存使用量减少，而且根据异常退出的时间，总结出一周发生一次。    
+阿里云监控连接数下降, CPU、内存使用量减少, 而且根据异常退出的时间, 总结出一周发生一次。    
 <br>  
 
 2. 日志输出
@@ -67,11 +67,11 @@ Event: 588.673 GC heap after
 Essentially, Java will stop with a message such as the above if a "serious" error occurs that means the JVM can't continue to function. Usually, the most discriminating line is the first mention of a DLL, such as the line in bold above. The source of the error could be any of the following:
 a bug in the JVM itself; search Google and/or the Java web site for a mention of ntdll.dll+0x2430;
 a bug in some non-Java code that was being run at the time: e.g. Java might have been calling into a printer driver, graphics driver etc.   
-官方对该错误的解释：JVM程序无法继续执行，有可能是JVM本身的BUG，也有可能是引入的DLL出现问题，及一般应对策略。
+官方对该错误的解释：JVM程序无法继续执行, 有可能是JVM本身的BUG, 也有可能是引入的DLL出现问题, 及一般应对策略。
 <br>  
 
 **C[tcnative-1.dll+0x12984f]**    
-JVMCrash时正在执行的库文件代码。除了“C”以外，还有可能是“V”、“j”、“v”、“J”。+0x12984f表示偏移值    
+JVMCrash时正在执行的库文件代码。除了“C”以外, 还有可能是“V”、“j”、“v”、“J”。+0x12984f表示偏移值    
 FrameType Description：
 C: Native C frame
 j: Interpreted Java frame
@@ -89,20 +89,20 @@ J: Other frame types, including compiled Java frames
 <br>  
 
 **GC Heap History (10 events):**   
-最后10次GC时，Java堆中各个部分的内存使用情况   
+最后10次GC时, Java堆中各个部分的内存使用情况   
 
 -----
 
 ## 二、分析   
-1. tcnative-1.dll： Tomcat中APR库，可用于使用JNI的方式来读取文件以及进行网络传输。可以大大提升Tomcat对静态文件的处理性能，同时如果你使用了HTTPS方式传输的话，也可以提升SSL的处理性能。      
-2. 在日志中并无出现项目中的的相关库函数，异常退出是本地的tcnative-1.dll库函数执行错误产生。    
-3. 考虑到物联网系统中暂时没有文件下载功能，文件网络传输要求并不高，可以考率直接换掉APR库      
+1. tcnative-1.dll： Tomcat中APR库, 可用于使用JNI的方式来读取文件以及进行网络传输。可以大大提升Tomcat对静态文件的处理性能, 同时如果你使用了HTTPS方式传输的话, 也可以提升SSL的处理性能。      
+2. 在日志中并无出现项目中的的相关库函数, 异常退出是本地的tcnative-1.dll库函数执行错误产生。    
+3. 考虑到物联网系统中暂时没有文件下载功能, 文件网络传输要求并不高, 可以考率直接换掉APR库      
   
 -----
 
 ## 三. 解决方法    
-1. 对该tcnative-1.dll备份，D:..\apache-tomcat-8.5.43\bin 下删除该DLL库。
-2. D:..\apache-tomcat-8.5.43\conf\server.xml 某些端口使用通过APR进行初始化，现在需要使用NIO初始化。
+1. 对该tcnative-1.dll备份, D:..\apache-tomcat-8.5.43\bin 下删除该DLL库。
+2. D:..\apache-tomcat-8.5.43\conf\server.xml 某些端口使用通过APR进行初始化, 现在需要使用NIO初始化。
 ```
     //如下
     <Connector port="443" protocol="org.apache.coyote.http11.Http11AprProtocol"
@@ -110,4 +110,4 @@ J: Other frame types, including compiled Java frames
     <Connector port="443" protocol="org.apache.coyote.http11.Http11NioProtocol"
                maxThreads="150" SSLEnabled="true" scheme="https" secure="true" >
 ```    
-3. 在测试服务器运行，测试。
+3. 在测试服务器运行, 测试。
