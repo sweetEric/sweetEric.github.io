@@ -12,15 +12,15 @@ description: 了解Jvm调优的内容, 认识调优的常见参数, 知道如何
 
 Jvm调优主要是堆内存调优, 也叫jvm堆调优。    
 
-![jvm 内存模型](./img/JVM-memery-module.png)   
+![jvm内存模型]({{ "/assets/images/postImg/JVM-memery-module.png" | absolute_url }})   
 
 
 每一块子内存区中都会存在有一部分的可变伸缩区, 其基本流程：
 如果空间不足, 在可变的范围之内扩大内存空间, 当一段时间之后发现内存空间没有这么紧张的时候, 再将可变空间进行释放。   
 
-![jvm 内存模型](./img/Jvm堆内存空间分配.png)
+![Jvm堆内存空间分配]({{ "/assets/images/postImg/Jvm堆内存空间分配.png" | absolute_url }})
 
-![jvm 内存模型](./img/Jvm空间调整参数.png)
+![Jvm空间调整参数]({{ "/assets/images/postImg/Jvm空间调整参数.png" | absolute_url }})
      
 ------  
 
@@ -119,7 +119,7 @@ Jvm调优主要是堆内存调优, 也叫jvm堆调优。
 ```
 
 
-![jvm 内存模型](./img/JVM优化策略.png)   
+![JVM优化策略]({{ "/assets/images/postImg/JVM优化策略.png" | absolute_url }})   
 
     注：
     startup.bat启动：在apache-tomcat-8.5.43\bin\catalina.bat第一行增加 
