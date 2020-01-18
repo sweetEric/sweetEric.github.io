@@ -49,7 +49,6 @@ Jvm调优主要是堆内存调优, 也叫jvm堆调优。
 #### JVM memory size
 
 | Young Generation | 246.67 mb | n/a       |
-| ---------------- | --------- | --------- |
 | Old Generation   | 493.33 mb | n/a       |
 | Total            | 740 mb    | 510.46 mb |   
 
@@ -57,7 +56,6 @@ Jvm调优主要是堆内存调优, 也叫jvm堆调优。
 #### 性能参数   
 
 | 吞吐量(Throughput) |  99.995% |
-| ------------------ | -------- |
 | 延迟(Latency)    |          |
 | Avg Pause GC Time  | 13.9 ms  |
 | Max Pause GC Time  | 89.6 ms  |    

@@ -21,7 +21,7 @@ description: Java设计模式
 3） Concrete Builder（具体建造者）：实现接口, 构建和装配各个部件,     
 4） Director（指挥者）：构建一个使用 Builder接口的对象。它主要是用于创建一个复杂的对象, 它主要有两个作用, 一是：隔高了客户与对象的生产过程, 二是负贡控制产品对象的生产过程    
 
-![建造者UmL](./img/BuilderPattern.png)    
+![建造者UmL]({{ "/assets/images/postImg/BuilderPattern.png" | absolute_url }})  
 
 ----
 
