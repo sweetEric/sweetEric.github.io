@@ -18,14 +18,14 @@ Jvm调优主要是堆内存调优, 也叫jvm堆调优。
 每一块子内存区中都会存在有一部分的可变伸缩区, 其基本流程：
 如果空间不足, 在可变的范围之内扩大内存空间, 当一段时间之后发现内存空间没有这么紧张的时候, 再将可变空间进行释放。   
 
-![Jvm堆内存空间分配]({{ "/assets/images/postImg/Jvm堆内存空间分配.png" | absolute_url }})
+![Jvm堆内存空间分配]({{ "/assets/images/postImg/Jvm-heap-deliver.png" | absolute_url }})
 
-![Jvm空间调整参数]({{ "/assets/images/postImg/Jvm空间调整参数.png" | absolute_url }})
+![Jvm空间调整参数]({{ "/assets/images/postImg/Jvm-space-adjust.png" | absolute_url }})
      
 ------  
 
 ### 二、几个调优的方向
-1. 减少fullGC
+1. 减少fullGC的次数
 2. 减少fullGC的时间
 3. 减少自动调整堆大小次数
      
@@ -76,9 +76,11 @@ Jvm调优主要是堆内存调优, 也叫jvm堆调优。
 ------  
 
 ### 五、Jvm优化
-1. 修改JVM内存配置, 尽量减少Jvm自动伸缩对空间, 
-2. 响应时间优先的应用
-    年老代尽可能设大, 直到接近系统的最低响应时间限制(根据实际情况选择)。在此种情况下, 年轻代收集发生的频率也是最小的。同时, 减少到达年老代的对象。年老代使用并发收集器, 所以其大小需要小心设置, 一般要考虑并发会话率和会话持续时间等一些参数。如果堆设置小了, 可以会造成内存碎片、高回收频率以及应用暂停而使用传统的标记清除方式；如果堆大了, 则需要较长的收集时间。
+- 修改JVM内存配置, 尽量减少Jvm自动伸缩对空间, 
+- 响应时间优先的应用    
+
+    年老代尽可能设大, 直到接近系统的最低响应时间限制(根据实际情况选择)。在此种情况下, 年轻代收集发生的频率也是最小的。同时, 减少到达年老代的对象。年老代使用并发收集器, 所以其大小需要小心设置, 一般要考虑并发会话率和会话持续时间等一些参数。如果堆设置小了, 可以会造成内存碎片、高回收频率以及应用暂停而使用传统的标记清除方式；如果堆大了, 则需要较长的收集时间。   
+
 
 {% highlight ruby %} 
     -Xmx760m  	                          //分配内存大小
@@ -88,9 +90,12 @@ Jvm调优主要是堆内存调优, 也叫jvm堆调优。
     -XX:CMSInitiatingOccupancyFraction=85  //当老生区达到85%时执行GC
     -XX:+UseConcMarkSweepGC               //使用并发收集器(ParNew+CMS)
     -XX:CMSFullGCsBeforeCompaction=5         //老生代执行7次GC时执行碎片整理
-{% endhighlight %} 
+{% endhighlight %}     
 
-3. 吞吐量优先的应用：设置较大的年轻代。原因是, 这样可以尽可能回收掉大部分短期对象, 减少中期的对象, 而年老代存放长期存活对象。 垃圾收集可以并行进行, 一般适合 8CPU 以上的应用。
+
+- 吞吐量优先的应用     
+
+    设置较大的年轻代。原因是, 这样可以尽可能回收掉大部分短期对象, 减少中期的对象, 而年老代存放长期存活对象。 垃圾收集可以并行进行, 一般适合 8CPU 以上的应用。
 
 {% highlight ruby %} 
     -Xmx760m  	                          //分配内存大小  
@@ -117,7 +122,7 @@ Jvm调优主要是堆内存调优, 也叫jvm堆调优。
 ```
 
 
-![JVM优化策略]({{ "/assets/images/postImg/JVM优化策略.png" | absolute_url }})   
+![JVM-tuning-strategy]({{ "/assets/images/postImg/JVM优化策略.png" | absolute_url }})   
 
     注：
     startup.bat启动：在apache-tomcat-8.5.43\bin\catalina.bat第一行增加 
@@ -145,7 +150,6 @@ Jvm调优主要是堆内存调优, 也叫jvm堆调优。
 | -XX:+UseG1GC            |  G1 Young Generation + G1 Old Generation             |
 | -XX:-UseParallelOldGC   | ParallelScavenge + SerialOld                         |      
 
-     
 ------  
 
 | 垃圾回收器 | 新生代名     | 老年代名                              |

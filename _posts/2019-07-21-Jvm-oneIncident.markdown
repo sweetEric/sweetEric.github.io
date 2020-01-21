@@ -7,12 +7,7 @@ tags: pratice
 author: Eric
 description: 生产项目异常下线, 且呈现周期性
 ---
-
-<!-- summary pratice -->
-# 生产项目周期性崩溃分析
-
------    
-
+   
 ## 一、生产出现服务器异常下线
 1. 生产环境
 环境:window server2008 R2 x64/4G
@@ -63,14 +58,14 @@ Event: 588.673 GC heap after
 ```    
 <br>  
 
-**EXCEPTION_ACCESS_VIOLATION**   
+> **EXCEPTION_ACCESS_VIOLATION**   
 Essentially, Java will stop with a message such as the above if a "serious" error occurs that means the JVM can't continue to function. Usually, the most discriminating line is the first mention of a DLL, such as the line in bold above. The source of the error could be any of the following:
 a bug in the JVM itself; search Google and/or the Java web site for a mention of ntdll.dll+0x2430;
 a bug in some non-Java code that was being run at the time: e.g. Java might have been calling into a printer driver, graphics driver etc.   
 官方对该错误的解释：JVM程序无法继续执行, 有可能是JVM本身的BUG, 也有可能是引入的DLL出现问题, 及一般应对策略。
 <br>  
 
-**C[tcnative-1.dll+0x12984f]**    
+> **C[tcnative-1.dll+0x12984f]**    
 JVMCrash时正在执行的库文件代码。除了“C”以外, 还有可能是“V”、“j”、“v”、“J”。+0x12984f表示偏移值    
 FrameType Description：
 C: Native C frame
@@ -78,20 +73,15 @@ j: Interpreted Java frame
 V: VMframe
 v: VMgenerated stub frame
 J: Other frame types, including compiled Java frames     
-<br>  
 
-**Core dump written. Default location: E:\apache-tomcat-8.5.31\hs_err_pid2412.mdmp**   
+> **Core dump written. Default location: E:\apache-tomcat-8.5.31\hs_err_pid2412.mdmp**   
 生成的内存快照  
-<br>  
 
-**JavaThread"https-openssl-apr-443-exec-15"**    
+> **JavaThread"https-openssl-apr-443-exec-15"**    
 标示当前正在执行的线程   
-<br>  
 
-**GC Heap History (10 events):**   
+> **GC Heap History (10 events):**   
 最后10次GC时, Java堆中各个部分的内存使用情况   
-
------
 
 ## 二、分析   
 1. tcnative-1.dll： Tomcat中APR库, 可用于使用JNI的方式来读取文件以及进行网络传输。可以大大提升Tomcat对静态文件的处理性能, 同时如果你使用了HTTPS方式传输的话, 也可以提升SSL的处理性能。      

@@ -1,0 +1,97 @@
+I"b)<h3 id="一-自动配置流程">一、 自动配置流程</h3>
+<ul>
+  <li>1.@SpringBootApplication
+SpringBoot 的自动配置从 <strong>@SpringBootApplication</strong> 该注解开始，该注解里面包含了一个自动配置注解注解 <strong>@EnableAutoConfiguration</strong>，如下。</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="vi">@SpringBootConfiguration</span>
+<span class="vi">@EnableAutoConfiguration</span>
+<span class="vi">@ComponentScan</span><span class="p">(</span>
+    <span class="n">excludeFilters</span> <span class="o">=</span> <span class="p">{</span><span class="vi">@Filter</span><span class="p">(</span>
+    <span class="n">type</span> <span class="o">=</span> <span class="no">FilterType</span><span class="o">.</span><span class="no">CUSTOM</span><span class="p">,</span>
+    <span class="n">classes</span> <span class="o">=</span> <span class="p">{</span><span class="no">TypeExcludeFilter</span><span class="p">.</span><span class="nf">class</span><span class="p">}</span>
+<span class="p">),</span> <span class="vi">@Filter</span><span class="p">(</span>
+    <span class="n">type</span> <span class="o">=</span> <span class="no">FilterType</span><span class="o">.</span><span class="no">CUSTOM</span><span class="p">,</span>
+    <span class="n">classes</span> <span class="o">=</span> <span class="p">{</span><span class="no">AutoConfigurationExcludeFilter</span><span class="p">.</span><span class="nf">class</span><span class="p">}</span>
+<span class="p">)}</span>
+<span class="p">)</span></code></pre></figure>
+
+<ul>
+  <li>2.自动配置包
+在 @AutoConfigurationPackage 中 Registrar.class 里有 registerBeanDefinitions 方法里面定义了自动扫描的包，也就是默认Application类中的当前目录下的所有包</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="vi">@AutoConfigurationPackage</span>
+<span class="vi">@Import</span><span class="p">({</span><span class="no">AutoConfigurationImportSelector</span><span class="p">.</span><span class="nf">class</span><span class="p">})</span>
+<span class="kp">public</span> <span class="vi">@interface</span> <span class="no">EnableAutoConfiguration</span> <span class="p">{</span>
+    <span class="no">String</span> <span class="no">ENABLED_OVERRIDE_PROPERTY</span> <span class="o">=</span> <span class="s2">"spring.boot.enableautoconfiguration"</span><span class="p">;</span>
+
+    <span class="no">Class</span><span class="o">&lt;</span><span class="sc">?&gt;</span><span class="p">[]</span> <span class="n">exclude</span><span class="p">()</span> <span class="n">default</span> <span class="p">{};</span>
+
+    <span class="no">String</span><span class="p">[]</span> <span class="n">excludeName</span><span class="p">()</span> <span class="n">default</span> <span class="p">{};</span>
+<span class="p">}</span>
+
+<span class="o">-------</span>
+
+<span class="vi">@Import</span><span class="p">({</span><span class="no">Registrar</span><span class="p">.</span><span class="nf">class</span><span class="p">})</span>
+<span class="kp">public</span> <span class="vi">@interface</span> <span class="no">AutoConfigurationPackage</span> <span class="p">{</span>
+<span class="p">}</span>
+
+<span class="o">-------</span>
+
+<span class="n">static</span> <span class="k">class</span> <span class="nc">Registrar</span> <span class="n">implements</span> <span class="no">ImportBeanDefinitionRegistrar</span><span class="p">,</span> <span class="no">DeterminableImports</span> <span class="p">{</span>
+    <span class="no">Registrar</span><span class="p">()</span> <span class="p">{</span>
+    <span class="p">}</span>
+
+    <span class="kp">public</span> <span class="n">void</span> <span class="n">registerBeanDefinitions</span><span class="p">(</span><span class="no">AnnotationMetadata</span> <span class="n">metadata</span><span class="p">,</span> <span class="no">BeanDefinitionRegistry</span> <span class="n">registry</span><span class="p">)</span> <span class="p">{</span>
+        <span class="no">AutoConfigurationPackages</span><span class="p">.</span><span class="nf">register</span><span class="p">(</span><span class="n">registry</span><span class="p">,</span> <span class="p">(</span><span class="n">new</span> <span class="no">AutoConfigurationPackages</span><span class="o">.</span><span class="no">PackageImport</span><span class="p">(</span><span class="n">metadata</span><span class="p">)).</span><span class="nf">getPackageName</span><span class="p">());</span>
+    <span class="p">}</span>
+
+    <span class="kp">public</span> <span class="no">Set</span><span class="o">&lt;</span><span class="no">Object</span><span class="o">&gt;</span> <span class="n">determineImports</span><span class="p">(</span><span class="no">AnnotationMetadata</span> <span class="n">metadata</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="no">Collections</span><span class="p">.</span><span class="nf">singleton</span><span class="p">(</span><span class="n">new</span> <span class="no">AutoConfigurationPackages</span><span class="o">.</span><span class="no">PackageImport</span><span class="p">(</span><span class="n">metadata</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<ul>
+  <li>3.使用默认主配置类 
+使用默认的配置，这里会给spring容器导入非常多的自动配置类</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="vi">@AutoConfigurationPackage</span>
+<span class="vi">@Import</span><span class="p">({</span><span class="no">AutoConfigurationImportSelector</span><span class="p">.</span><span class="nf">class</span><span class="p">})</span>
+
+<span class="o">-------</span>
+
+<span class="kp">protected</span> <span class="no">AutoConfigurationImportSelector</span><span class="o">.</span><span class="no">AutoConfigurationEntry</span> <span class="n">getAutoConfigurationEntry</span><span class="p">(</span><span class="no">AutoConfigurationMetadata</span> <span class="n">autoConfigurationMetadata</span><span class="p">,</span> <span class="no">AnnotationMetadata</span> <span class="n">annotationMetadata</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">this</span><span class="p">.</span><span class="nf">isEnabled</span><span class="p">(</span><span class="n">annotationMetadata</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="no">EMPTY_ENTRY</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="no">AnnotationAttributes</span> <span class="n">attributes</span> <span class="o">=</span> <span class="n">this</span><span class="p">.</span><span class="nf">getAttributes</span><span class="p">(</span><span class="n">annotationMetadata</span><span class="p">);</span>
+        <span class="no">List</span><span class="o">&lt;</span><span class="no">String</span><span class="o">&gt;</span> <span class="n">configurations</span> <span class="o">=</span> <span class="n">this</span><span class="p">.</span><span class="nf">getCandidateConfigurations</span><span class="p">(</span><span class="n">annotationMetadata</span><span class="p">,</span> <span class="n">attributes</span><span class="p">);</span>
+        <span class="n">configurations</span> <span class="o">=</span> <span class="n">this</span><span class="p">.</span><span class="nf">removeDuplicates</span><span class="p">(</span><span class="n">configurations</span><span class="p">);</span>
+        <span class="no">Set</span><span class="o">&lt;</span><span class="no">String</span><span class="o">&gt;</span> <span class="n">exclusions</span> <span class="o">=</span> <span class="n">this</span><span class="p">.</span><span class="nf">getExclusions</span><span class="p">(</span><span class="n">annotationMetadata</span><span class="p">,</span> <span class="n">attributes</span><span class="p">);</span>
+        <span class="n">this</span><span class="p">.</span><span class="nf">checkExcludedClasses</span><span class="p">(</span><span class="n">configurations</span><span class="p">,</span> <span class="n">exclusions</span><span class="p">);</span>
+        <span class="n">configurations</span><span class="p">.</span><span class="nf">removeAll</span><span class="p">(</span><span class="n">exclusions</span><span class="p">);</span>
+        <span class="n">configurations</span> <span class="o">=</span> <span class="n">this</span><span class="p">.</span><span class="nf">filter</span><span class="p">(</span><span class="n">configurations</span><span class="p">,</span> <span class="n">autoConfigurationMetadata</span><span class="p">);</span>
+        <span class="n">this</span><span class="p">.</span><span class="nf">fireAutoConfigurationImportEvents</span><span class="p">(</span><span class="n">configurations</span><span class="p">,</span> <span class="n">exclusions</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">new</span> <span class="no">AutoConfigurationImportSelector</span><span class="o">.</span><span class="no">AutoConfigurationEntry</span><span class="p">(</span><span class="n">configurations</span><span class="p">,</span> <span class="n">exclusions</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p><img src="http://localhost:4000/assets/images/postImg/SpringBoot-AutoDependency.png" alt="自动导入的包列表" /></p>
+
+<h3 id="一-配置相关注解">一、 配置相关注解</h3>
+<ul>
+  <li>@ConfigureationProperties(prefix = “xxx”) <br />
+  该注解和@Bean 或者 @Component 等只要能生成spring bean 的注解 结合起来使用,这样的话,当其他类注入该类时,就会触发该类的加载过程，注入在application.properties中以server开头的属性。</li>
+  <li>@Value() <br />
+Spring容器从application.properties文件中读取指定的值。</li>
+  <li>@ImportResource(locations = {classpath:xxx.xml}) <br />
+  导入Spring的<strong>配置文件</strong>，让配置文件里面的内容生效。</li>
+  <li>@Import <br />
+  功能类似XML配置的，用来导入<strong>配置类</strong></li>
+  <li>@PropertyResource(“classpath:xxx.properties/yml”) <br />
+  是加载指定的<strong>属性文件</strong>。</li>
+</ul>
+
+:ET

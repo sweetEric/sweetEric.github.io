@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "JQuery 和 DOM 操作"
+title:  "JS中元素属性的获取和设置 "
 date:   2019-07-10 20:35:53 +0400
 categories: JavaScript
 tags: summary
@@ -8,18 +8,12 @@ author: Eric
 description: JavaScript JQuery和DOM操作
 ---
 
-<!-- summary pratice -->
-# JS中元素属性的获取和设置    
------   
 
-
-#### jQuery对象和DOM对象的相互转换      
+> #### jQuery对象和DOM对象的相互转换      
 \$(\"#id\")\-\-\-\-\-(jQuery对象)  
 jQuery -->DOM\-\-\-\-\-\$(\"#id\")[0]   
 document.getElementById(\"#id\")\-\-\-\-\-(DOM对象)   
 DOM-->jQuery\-\-\-\-\-\$(document.getElementById(\"#id\"))   
-
------    
 
 
 ### 一. **获取元素节点**   
@@ -85,8 +79,8 @@ DOM-->jQuery\-\-\-\-\-\$(document.getElementById(\"#id\"))
 -----   
 
 ### 四. **要点归纳**    
-**1.JQuery 底下封装和实现了大部分DOM的方法, 可以尽量使用JQuery来代替DOM操作**     
-**2.JQuery 由于地下大部分使用DOM的方法达到局部刷新的效果，对性能消耗较大，这时可以选择reat、vue等通过操作数据(状态)来使页面渲染的新框架**
+1.JQuery 底下封装和实现了大部分DOM的方法, 可以尽量使用JQuery来代替DOM操作      
+2.JQuery 由于地下大部分使用DOM的方法达到局部刷新的效果，对性能消耗较大，这时可以选择reat、vue等通过操作数据(状态)来使页面渲染的新框架
 
 -----   
 

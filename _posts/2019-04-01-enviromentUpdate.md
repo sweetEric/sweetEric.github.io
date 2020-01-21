@@ -10,18 +10,14 @@ description: 由于目前的项目搭建的平台太久, 需要升级
 
 ### 一、运行环境基础配置
 1. 服务器环境
-    2vCPU 4 GiB (I/O优化)   
-
-    ecs.n4.large   5Mbps (峰值)    
-
-    Intel(R) Xeon(R) CPU E5-2682 v4 @ 2.5GHz     
+>2vCPU 4 GiB (I/O优化)   
+>ecs.n4.large   5Mbps (峰值)    
+>Intel(R) Xeon(R) CPU E5-2682 v4 @ 2.5GHz     
       
 2. 运行环境
-    jre: 1.6    
-
-    jvm：默认参数    
-
-    tomcat: 7    
+>jre: 1.6    
+>jvm：默认参数    
+>tomcat: 7    
 
 
 ### 二、影响项目运行效率的因子    
