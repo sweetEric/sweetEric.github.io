@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "mybatis使用Example动态生成sql"
+title:  "Mybatis使用Example动态生成sql"
 date:   2019-07-02 20:35:53 +0400
-categories: SpringBoot
-tags: summary
+categories: Pratice
+tags: SpringBoot
 author: Eric
 description: mybatis使用Example动态生成sql
 ---  

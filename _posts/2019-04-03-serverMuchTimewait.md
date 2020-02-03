@@ -2,8 +2,8 @@
 layout: post
 title:  "物联网TIME_WAIT数量过多"
 date:   2019-04-03 21:20:56 +0800
-categories: Server
-tags: summary
+categories: Summary
+tags: Server
 author: Eric
 description: 服务器启动时time_wait状态的连接过多
 ---

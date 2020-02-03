@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "TCP/IP协议详解"
+title:  "TCP/IP 协议详解"
 date:   2019-03-10 20:55:53 +0400
-categories: TCP
-tags: Summary
+categories: Summary
+tags: Tcp
 author: Eric
 description: TCP/IP协议归纳，总结
 ---   

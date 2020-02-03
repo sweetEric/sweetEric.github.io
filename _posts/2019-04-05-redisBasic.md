@@ -1,11 +1,13 @@
 ---
 layout: post
-title:  "Redis的几种常见使用场景"
+title:  "Redis 的几种常见使用场景"
 date:   2019-04-05 28:10:51 +0800
-categories: SpringBoot
-tags: summary
+categories: Summary
+tags: SpringBoot Redis
 description: 具体分析redis的集几种数据类型的不同和相关使用场景
 ---
+
+>Springboot2.0
 
 ### 一、Reids基础介绍
 >redis是一个开源的使用C语言编写的一个kv存储系统，是一个速度非常快的非关系远程内存数据库。它支持包括String、List、Set、Zset、hash五种数据结构。除此之外，通过复制、持久化和客户端分片等特性，用户可以很方便地将redis扩展成一个能够包含数百GB数据和每秒处理上百万次的请求的系统。目前支持多种语言的api，方便用户使用。   

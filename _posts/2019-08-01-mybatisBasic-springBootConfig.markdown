@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "mybatis基础及springBoot中的配置"
+title:  "Mybatis 基础及 springBoot 中的配置"
 date:   2019-08-01 21:20:56 +0800
-categories: SpringBoot
-tags: summary
+categories: Summary
+tags: SpringBoot
 author: Eric
 description: 了解mybatis的事务管理, 及如何在SpringBoot2.X中进行配置
 ---

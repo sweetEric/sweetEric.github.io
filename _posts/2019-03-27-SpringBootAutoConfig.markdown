@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "SpringBoot自动配置"
+title:  "SpringBoot 自动配置"
 date:   2019-04-01 21:10:51 +0800
-categories: SpringBoot
-tags: Summary
+categories: Pratice
+tags: SpringBoot
 author: Eric
 description: SpringBoot 的自动配置流程，常用的注解使用
 ---

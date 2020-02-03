@@ -2,8 +2,8 @@
 layout: post
 title:  "JS中元素属性的获取和设置 "
 date:   2019-07-10 20:35:53 +0400
-categories: JavaScript
-tags: summary
+categories: Summary
+tags: JavaScript
 author: Eric
 description: JavaScript JQuery和DOM操作
 ---

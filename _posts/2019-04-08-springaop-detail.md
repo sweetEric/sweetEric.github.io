@@ -2,11 +2,13 @@
 layout: post
 title:  "Spring Aop 详解"
 date:   2019-04-08 20:10:51 +0800
-categories: Spring
-tags: Summary,Java
+categories: Summary
+tags: SpringBoot Java
 author: Eric
 description: Spring aop的使用，以及源码分析
 ---
+
+>Springboot2.0
 
 ### 一、Aop是什么   
 

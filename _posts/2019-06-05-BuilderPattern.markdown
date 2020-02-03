@@ -2,8 +2,8 @@
 layout: post
 title:  "建造者模式"
 date:   2019-06-05 14:10:51 +0800
-categories: 设计模式
-tags: summary
+categories: Summary
+tags: Java 设计模式
 description: Java设计模式
 ---
 

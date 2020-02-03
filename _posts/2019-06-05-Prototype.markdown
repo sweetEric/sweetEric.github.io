@@ -2,8 +2,8 @@
 layout: post
 title:  "原型模式"
 date:   2019-06-05 14:10:51 +0800
-categories: 设计模式
-tags: summary
+categories: Summary
+tags: 设计模式 Java
 author: Eric
 description: Java设计模式之原型模式
 ---

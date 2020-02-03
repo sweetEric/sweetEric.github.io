@@ -2,8 +2,8 @@
 layout: post
 title:  "JVM 调优"
 date:   2019-08-2 21:11:56 +0800
-categories: Jvm
-tags: summary
+categories: Pratice
+tags: Jvm Java
 author: Eric
 description: 了解Jvm调优的内容, 认识调优的常见参数, 知道如何选择垃圾收集
 ---
@@ -122,7 +122,7 @@ Jvm调优主要是堆内存调优, 也叫jvm堆调优。
 ```
 
 
-![JVM-tuning-strategy]({{ "/assets/images/postImg/JVM优化策略.png" | absolute_url }})   
+![JVM-tuning-strategy]({{ "/assets/images/postImg/JVM-tuning-strategy.png" | absolute_url }})   
 
     注：
     startup.bat启动：在apache-tomcat-8.5.43\bin\catalina.bat第一行增加 
