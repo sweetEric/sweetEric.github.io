@@ -2,7 +2,7 @@
 layout: post
 title:  "JVM 调优"
 date:   2019-08-2 21:11:56 +0800
-categories: JVM
+categories: Jvm
 tags: summary
 author: Eric
 description: 了解Jvm调优的内容, 认识调优的常见参数, 知道如何选择垃圾收集

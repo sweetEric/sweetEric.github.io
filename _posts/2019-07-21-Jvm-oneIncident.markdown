@@ -2,7 +2,7 @@
 layout: post
 title:  "生产项目周期性崩溃分析"
 date:   2019-07-21 21:10:51 +0800
-categories: JVM
+categories: Jvm
 tags: pratice
 author: Eric
 description: 生产项目异常下线, 且呈现周期性

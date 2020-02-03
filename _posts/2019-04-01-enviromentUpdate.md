@@ -2,7 +2,7 @@
 layout: post
 title:  "后台项目运行环境升级"
 date:   2019-04-01 21:10:51 +0800
-categories: Windows
+categories: Server
 tags: pratice
 author: Eric
 description: 由于目前的项目搭建的平台太久, 需要升级

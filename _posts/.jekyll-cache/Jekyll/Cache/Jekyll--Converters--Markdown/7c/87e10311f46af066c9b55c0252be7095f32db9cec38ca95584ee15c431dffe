@@ -1,0 +1,114 @@
+I"�$<h3 id="一mapper接口中的函数及方法">一、mapper接口中的函数及方法</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>方法</th>
+      <th>功能说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>int countByExample(UserExample example) thorws SQLException</td>
+      <td>按条件计数</td>
+    </tr>
+    <tr>
+      <td>int deleteByPrimaryKey(Integer id) thorws SQLException</td>
+      <td>按主键删除</td>
+    </tr>
+    <tr>
+      <td>int deleteByExample(UserExample example) thorws SQLException</td>
+      <td>按条件查询</td>
+    </tr>
+    <tr>
+      <td>String/Integer insert(User record) thorws SQLException</td>
+      <td>插入数据（返回值为ID）</td>
+    </tr>
+    <tr>
+      <td>User selectByPrimaryKey(Integer id) thorws SQLException</td>
+      <td>按主键查询</td>
+    </tr>
+    <tr>
+      <td>ListselectByExample(UserExample example) thorws SQLException</td>
+      <td>按条件查询</td>
+    </tr>
+    <tr>
+      <td>ListselectByExampleWithBLOGs(UserExample example) thorws SQLException</td>
+      <td>按条件查询（包括BLOB字段）。只有当数据表中的字段类型有为二进制的才会产生。</td>
+    </tr>
+    <tr>
+      <td>int updateByPrimaryKey(User record) thorws SQLException</td>
+      <td>按主键更新</td>
+    </tr>
+    <tr>
+      <td>int updateByPrimaryKeySelective(User record) thorws SQLException</td>
+      <td>按主键更新值不为null的字段</td>
+    </tr>
+    <tr>
+      <td>int updateByExample(User record, UserExample example) thorws SQLException</td>
+      <td>按条件更新</td>
+    </tr>
+    <tr>
+      <td>int updateByExampleSelective(User record, UserExample example) thorws SQLException</td>
+      <td>按条件更新值不为null的字段</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="二example实例解析">二、example实例解析</h3>
+<p>mybatis的逆向工程中会生成实例及实例对应的example，example用于添加条件，相当where后面的部分 
+xxxExample example = new xxxExample(); 
+Criteria criteria = new Example().createCriteria(); <br />
+| 方法                                     | 说明                                        |
+| —————————————— | ——————————————— |
+| example.setOrderByClause(“字段名 ASC”); | 添加升序排列条件，DESC为降序      |
+| example.setDistinct(false)                 | 去除重复，boolean型，true为选择不重复的记录。 |
+| criteria.andXxxIsNull                      | 添加字段xxx为null的条件               |
+| criteria.andXxxIsNotNull                   | 添加字段xxx不为null的条件            |
+| criteria.andXxxEqualTo(value)              | 添加xxx字段等于value条件              |
+| criteria.andXxxNotEqualTo(value)           | 添加xxx字段不等于value条件           |
+| criteria.andXxxGreaterThan(value)          | 添加xxx字段大于value条件              |
+| criteria.andXxxGreaterThanOrEqualTo(value) | 添加xxx字段大于等于value条件        |
+| criteria.andXxxLessThan(value)             | 添加xxx字段小于value条件              |
+| criteria.andXxxLessThanOrEqualTo(value)    | 添加xxx字段小于等于value条件        |
+| criteria.andXxxIn(List&lt;？&gt;)               | 添加xxx字段值在List&lt;？&gt;条件          |
+| criteria.andXxxNotIn(List&lt;？&gt;)            | 添加xxx字段值不在List&lt;？&gt;条件       |
+| criteria.andXxxLike(“%”+value+”%”) | 添加xxx字段值为value的模糊查询条件 |
+| criteria.andXxxNotLike(“%”+value+”%”) | 添加xxx字段值不为value的模糊查询条件 |
+| criteria.andXxxBetween(value1,value2)      | 添加xxx字段值在value1和value2之间条件 |
+| criteria.andXxxNotBetween(value1,value2)   | 添加xxx字段值不在value1和value2之间条件 |</p>
+
+<p>Example:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">    
+<span class="o">&lt;!--</span> <span class="err">排序</span> <span class="o">--&gt;</span>
+<span class="no">Example</span> <span class="n">example</span> <span class="o">=</span> <span class="n">new</span> <span class="no">Example</span><span class="p">(</span><span class="no">Country</span><span class="p">.</span><span class="nf">class</span><span class="p">);</span>
+<span class="n">example</span><span class="p">.</span><span class="nf">orderBy</span><span class="p">(</span><span class="s2">"id"</span><span class="p">).</span><span class="nf">desc</span><span class="p">().</span><span class="nf">orderBy</span><span class="p">(</span><span class="s2">"countryname"</span><span class="p">).</span><span class="nf">orderBy</span><span class="p">(</span><span class="s2">"countrycode"</span><span class="p">).</span><span class="nf">asc</span><span class="p">();</span>
+<span class="no">List</span><span class="o">&lt;</span><span class="no">Country</span><span class="o">&gt;</span> <span class="n">countries</span> <span class="o">=</span> <span class="n">mapper</span><span class="p">.</span><span class="nf">selectByExample</span><span class="p">(</span><span class="n">example</span><span class="p">);</span>
+
+<span class="o">&lt;!--</span> <span class="err">去重</span> <span class="o">--&gt;</span>
+<span class="no">CountryExample</span> <span class="n">example</span> <span class="o">=</span> <span class="n">new</span> <span class="no">CountryExample</span><span class="p">();</span>
+<span class="sr">//</span><span class="err">设置</span> <span class="n">distinct</span>
+<span class="n">example</span><span class="p">.</span><span class="nf">setDistinct</span><span class="p">(</span><span class="kp">true</span><span class="p">);</span>
+<span class="n">example</span><span class="p">.</span><span class="nf">createCriteria</span><span class="p">().</span><span class="nf">andCountrynameLike</span><span class="p">(</span><span class="s2">"A%"</span><span class="p">);</span>
+<span class="n">example</span><span class="p">.</span><span class="nf">or</span><span class="p">().</span><span class="nf">andIdGreaterThan</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+<span class="no">List</span><span class="o">&lt;</span><span class="no">Country</span><span class="o">&gt;</span> <span class="n">countries</span> <span class="o">=</span> <span class="n">mapper</span><span class="p">.</span><span class="nf">selectByExample</span><span class="p">(</span><span class="n">example</span><span class="p">);</span>
+
+<span class="o">&lt;!--</span> <span class="err">设置查询列</span> <span class="o">--&gt;</span>
+<span class="no">Example</span> <span class="n">example</span> <span class="o">=</span> <span class="n">new</span> <span class="no">Example</span><span class="p">(</span><span class="no">Country</span><span class="p">.</span><span class="nf">class</span><span class="p">);</span>
+<span class="n">example</span><span class="p">.</span><span class="nf">selectProperties</span><span class="p">(</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"countryname"</span><span class="p">);</span>
+<span class="no">List</span><span class="o">&lt;</span><span class="no">Country</span><span class="o">&gt;</span> <span class="n">countries</span> <span class="o">=</span> <span class="n">mapper</span><span class="p">.</span><span class="nf">selectByExample</span><span class="p">(</span><span class="n">example</span><span class="p">);</span>   
+
+<span class="o">&lt;!--</span> <span class="no">Example</span><span class="p">.</span><span class="nf">builder</span> <span class="err">方式</span> <span class="o">--&gt;</span>
+<span class="no">Example</span> <span class="n">example</span> <span class="o">=</span> <span class="no">Example</span><span class="p">.</span><span class="nf">builder</span><span class="p">(</span><span class="no">Country</span><span class="p">.</span><span class="nf">class</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">select</span><span class="p">(</span><span class="s2">"countryname"</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="no">Sqls</span><span class="p">.</span><span class="nf">custom</span><span class="p">().</span><span class="nf">andGreaterThan</span><span class="p">(</span><span class="s2">"id"</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+        <span class="p">.</span><span class="nf">orderByAsc</span><span class="p">(</span><span class="s2">"countrycode"</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">forUpdate</span><span class="p">()</span>
+        <span class="p">.</span><span class="nf">build</span><span class="p">();</span>
+<span class="no">List</span><span class="o">&lt;</span><span class="no">Country</span><span class="o">&gt;</span> <span class="n">countries</span> <span class="o">=</span> <span class="n">mapper</span><span class="p">.</span><span class="nf">selectByExample</span><span class="p">(</span><span class="n">example</span><span class="p">);</span>   </code></pre></figure>
+
+<hr />
+
+<h6 id="httpswwwcnblogscomkelthuzadxp10924117html"><a href="https://blog.csdn.net/lyf_ldh/article/details/80976552">https://www.cnblogs.com/kelthuzadx/p/10924117.html</a></h6>
+:ET

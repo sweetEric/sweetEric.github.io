@@ -90,7 +90,7 @@ protected AutoConfigurationImportSelector.AutoConfigurationEntry getAutoConfigur
 
 ![自动导入的包列表]({{ "/assets/images/postImg/SpringBoot-AutoDependency.png" | absolute_url }})
 
-### 一、 配置相关注解   
+### 二、 配置相关注解   
 - @ConfigureationProperties(prefix = "xxx")   
     该注解和@Bean 或者 @Component 等只要能生成spring bean 的注解 结合起来使用,这样的话,当其他类注入该类时,就会触发该类的加载过程，注入在application.properties中以server开头的属性。   
 - @Value()   
@@ -101,4 +101,6 @@ Spring容器从application.properties文件中读取指定的值。
     功能类似XML配置的，用来导入**配置类**   
 - @PropertyResource("classpath:xxx.properties/yml")   
     是加载指定的**属性文件**。   
+
+
 
