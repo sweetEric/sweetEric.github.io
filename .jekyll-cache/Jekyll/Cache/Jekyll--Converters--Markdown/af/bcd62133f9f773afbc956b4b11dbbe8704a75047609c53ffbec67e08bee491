@@ -1,0 +1,312 @@
+I"�<p><strong>版权声明：本文为CSDN博主「木叶之荣」的原创文章，遵循 CC 4.0 BY-SA 版权协议，</strong> <br />
+<strong>链接:</strong> <a href="https://blog.csdn.net/zknxx/article/details/79572387">Spring系列之FactoryBean(一)</a></p>
+
+<p>FactoryBean是一个工厂Bean，可以生成某一个类型Bean实例，它最大的一个作用是：可以让我们自定义Bean的创建过程。BeanFactory是Spring容器中的一个基本类也是很重要的一个类，在BeanFactory中可以创建和管理Spring容器中的Bean，它对于Bean的创建有一个统一的流程。下面我们先看一下FactoryBean中有什么东西：</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="kp">public</span> <span class="n">interface</span> <span class="no">FactoryBean</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="p">{</span>
+
+    <span class="sr">//</span><span class="err">返回的对象实例</span>
+    <span class="no">T</span> <span class="n">getObject</span><span class="p">()</span> <span class="n">throws</span> <span class="no">Exception</span><span class="p">;</span>
+    <span class="sr">//</span><span class="no">Bean</span><span class="err">的类型</span>
+    <span class="no">Class</span><span class="o">&lt;</span><span class="sc">?&gt;</span> <span class="n">getObjectType</span><span class="p">();</span>
+    <span class="sr">//</span><span class="n">true</span><span class="err">是单例，</span><span class="n">false</span><span class="err">是非单例</span>  <span class="err">在</span><span class="no">Spring5</span><span class="o">.</span><span class="mi">0</span><span class="err">中此方法利用了</span><span class="no">JDK1</span><span class="o">.</span><span class="mi">8</span><span class="err">的新特性变成了</span><span class="n">default</span><span class="err">方法，返回</span><span class="kp">true</span>
+    <span class="n">boolean</span> <span class="n">isSingleton</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>从上面的代码中我们发现在FactoryBean中定义了一个Spring Bean的很重要的三个特性：是否单例、Bean类型、Bean实例，这也应该是我们关于Spring中的一个Bean最直观的感受。虽然没有返回BeanName的值，但是我们也知道BeanName的值。下面我们来写一个关于FactoryBean的小例子，看看我们是怎么使用FactoryBean的，然后再从源码的角度看看Spring是怎么解析FactoryBean中的Bean的。</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="sr">/FactoryBean接口的实现类
+@Component
+public class FactoryBeanLearn implements FactoryBean {
+
+    @Override
+    public Object getObject() throws Exception {
+        /</span><span class="o">/</span><span class="err">这个</span><span class="no">Bean</span><span class="err">是我们自己</span><span class="n">new</span><span class="err">的，这里我们就可以控制</span><span class="no">Bean</span><span class="err">的创建过程了</span>
+        <span class="k">return</span> <span class="n">new</span> <span class="no">FactoryBeanServiceImpl</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="vi">@Override</span>
+    <span class="kp">public</span> <span class="no">Class</span><span class="o">&lt;</span><span class="sc">?&gt;</span> <span class="n">getObjectType</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="no">FactoryBeanService</span><span class="p">.</span><span class="nf">class</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="vi">@Override</span>
+    <span class="kp">public</span> <span class="n">boolean</span> <span class="n">isSingleton</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kp">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="sr">//</span><span class="err">接口</span>
+<span class="kp">public</span> <span class="n">interface</span> <span class="no">FactoryBeanService</span> <span class="p">{</span>
+
+    <span class="sr">/**
+     * 测试FactoryBean
+     */</span>
+    <span class="n">void</span> <span class="n">testFactoryBean</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="sr">//</span><span class="err">实现类</span>
+<span class="kp">public</span> <span class="k">class</span> <span class="nc">FactoryBeanServiceImpl</span> <span class="n">implements</span> <span class="no">FactoryBeanService</span> <span class="p">{</span>
+    <span class="sr">/**
+     * 测试FactoryBean
+     */</span>
+    <span class="vi">@Override</span>
+    <span class="kp">public</span> <span class="n">void</span> <span class="n">testFactoryBean</span><span class="p">()</span> <span class="p">{</span>
+        <span class="no">System</span><span class="p">.</span><span class="nf">out</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s2">"我是FactoryBean的一个测试类。。。。"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="sr">//</span><span class="err">单测</span>
+<span class="vi">@Test</span>
+<span class="kp">public</span> <span class="n">void</span> <span class="nb">test</span><span class="p">()</span> <span class="p">{</span>
+    <span class="no">ClassPathXmlApplicationContext</span> <span class="n">cac</span> <span class="o">=</span> <span class="n">new</span> <span class="no">ClassPathXmlApplicationContext</span><span class="p">(</span><span class="s2">"classpath:com/zkn/spring/learn/base/applicationContext.xml"</span><span class="p">);</span>
+    <span class="no">FactoryBeanService</span> <span class="n">beanService</span> <span class="o">=</span> <span class="n">cac</span><span class="p">.</span><span class="nf">getBean</span><span class="p">(</span><span class="no">FactoryBeanService</span><span class="p">.</span><span class="nf">class</span><span class="p">);</span>
+    <span class="n">beanService</span><span class="p">.</span><span class="nf">testFactoryBean</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="sr">//</span><span class="err">输出</span>
+<span class="err">我是</span><span class="no">FactoryBean</span><span class="err">的一个测试类。。。。</span></code></pre></figure>
+
+<p>从上面的代码中我们可以看到我们从Spring容器中获取了FactoryBeanService类型的Bean。那么这个获取Bean的过程Spring是怎么处理的呢？它是怎么从FactoryBean中获取我们自己创建的Bean实例的呢？我们先从getBean这个方法看起，因为在Spring的AbstractApplicationContext中有很多重载的getBean方法，这里我们调用的是根据Type(指Class类型)来获取的Bean信息。我们传入的type是FactoryBeanService类型。</p>
+
+<h3 id="getbean">getBean</h3>
+<p><strong>AbstractApplicationContext#getBean(java.lang.Class)</strong></p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+ <span class="vi">@Override</span>
+<span class="kp">public</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="no">T</span> <span class="n">getBean</span><span class="p">(</span><span class="no">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">requiredType</span><span class="p">)</span> <span class="n">throws</span> <span class="no">BeansException</span> <span class="p">{</span>
+    <span class="sr">//</span><span class="err">检测</span><span class="no">BeanFactory</span><span class="err">的激活状态</span>
+    <span class="n">assertBeanFactoryActive</span><span class="p">();</span>
+    <span class="sr">//</span><span class="n">getBeanFactory</span><span class="p">()</span><span class="err">获取到的是一个</span><span class="no">DefaultListableBeanFactory</span><span class="err">的实例</span>
+    <span class="sr">//</span><span class="err">所以我们去</span><span class="no">DefaultListableBeanFactory</span><span class="err">中看一下</span><span class="n">getBean</span><span class="err">这个方法</span>
+    <span class="k">return</span> <span class="n">getBeanFactory</span><span class="p">().</span><span class="nf">getBean</span><span class="p">(</span><span class="n">requiredType</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p><strong>DefaultListableBeanFactory#getBean(java.lang.Class)</strong></p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="vi">@Override</span>
+<span class="kp">public</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="no">T</span> <span class="n">getBean</span><span class="p">(</span><span class="no">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">requiredType</span><span class="p">)</span> <span class="n">throws</span> <span class="no">BeansException</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">getBean</span><span class="p">(</span><span class="n">requiredType</span><span class="p">,</span> <span class="p">(</span><span class="no">Object</span><span class="p">[])</span> <span class="n">null</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="vi">@Override</span>
+<span class="kp">public</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="no">T</span> <span class="n">getBean</span><span class="p">(</span><span class="no">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">requiredType</span><span class="p">,</span> <span class="no">Object</span><span class="o">...</span> <span class="n">args</span><span class="p">)</span> <span class="n">throws</span> <span class="no">BeansException</span> <span class="p">{</span>
+    <span class="sr">//</span><span class="err">解析</span><span class="no">Bean</span>
+    <span class="no">NamedBeanHolder</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">namedBean</span> <span class="o">=</span> <span class="n">resolveNamedBean</span><span class="p">(</span><span class="n">requiredType</span><span class="p">,</span> <span class="n">args</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">namedBean</span> <span class="o">!=</span> <span class="n">null</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">namedBean</span><span class="p">.</span><span class="nf">getBeanInstance</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="sr">//</span><span class="err">如果当前</span><span class="no">Spring</span><span class="err">容器中没有获取到相应的</span><span class="no">Bean</span><span class="err">信息，则从父容器中获取</span>
+    <span class="sr">//</span><span class="no">SpringMVC</span><span class="err">是一个很典型的父子容器</span>
+    <span class="no">BeanFactory</span> <span class="n">parent</span> <span class="o">=</span> <span class="n">getParentBeanFactory</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">parent</span> <span class="o">!=</span> <span class="n">null</span><span class="p">)</span> <span class="p">{</span>
+        <span class="sr">//</span><span class="err">一个重复的调用过程，只不过</span><span class="no">BeanFactory</span><span class="err">的实例变了</span>
+        <span class="k">return</span> <span class="n">parent</span><span class="p">.</span><span class="nf">getBean</span><span class="p">(</span><span class="n">requiredType</span><span class="p">,</span> <span class="n">args</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="sr">//</span><span class="err">如果都没有获取到，则抛出异常</span>
+    <span class="kp">throw</span> <span class="n">new</span> <span class="no">NoSuchBeanDefinitionException</span><span class="p">(</span><span class="n">requiredType</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>在上面的代码中，我们重点关注的是<strong>resolveNamedBean</strong>这个方法：</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="kp">private</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="no">NamedBeanHolder</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">resolveNamedBean</span><span class="p">(</span><span class="no">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">requiredType</span><span class="p">,</span> <span class="no">Object</span><span class="o">...</span> <span class="n">args</span><span class="p">)</span> <span class="n">throws</span> <span class="no">BeansException</span> <span class="p">{</span>
+  <span class="no">Assert</span><span class="p">.</span><span class="nf">notNull</span><span class="p">(</span><span class="n">requiredType</span><span class="p">,</span> <span class="s2">"Required type must not be null"</span><span class="p">);</span>
+  <span class="sr">//</span><span class="err">这个方法是根据传入的</span><span class="no">Class</span><span class="err">类型来获取</span><span class="no">BeanName</span><span class="err">，因为我们有一个接口有多个实现类的情况</span><span class="p">(</span><span class="err">多态</span><span class="p">)</span><span class="err">，</span>
+  <span class="sr">//</span><span class="err">所以这里返回的是一个</span><span class="no">String</span><span class="err">数组。这个过程也比较复杂。</span>
+  <span class="sr">//</span><span class="err">这里需要注意的是，我们调用</span><span class="n">getBean</span><span class="err">方法传入的</span><span class="n">type</span><span class="err">为</span><span class="n">com</span><span class="p">.</span><span class="nf">zkn</span><span class="p">.</span><span class="nf">spring</span><span class="p">.</span><span class="nf">learn</span><span class="p">.</span><span class="nf">service</span><span class="o">.</span><span class="no">FactoryBeanService</span><span class="err">类型，但是我们没有在</span><span class="no">Spring</span><span class="err">容器中注入</span><span class="no">FactoryBeanService</span><span class="err">类型的</span><span class="no">Bean</span>
+  <span class="sr">//</span><span class="err">正常来说我们在这里是获取不到</span><span class="n">beanName</span><span class="err">呢。但是事实是不是这样呢？看下面我们对</span><span class="n">getBeanNamesForType</span><span class="err">的分析</span>
+  <span class="no">String</span><span class="p">[]</span> <span class="n">candidateNames</span> <span class="o">=</span> <span class="n">getBeanNamesForType</span><span class="p">(</span><span class="n">requiredType</span><span class="p">);</span>
+  <span class="sr">//</span><span class="err">如果有多个</span><span class="no">BeanName</span><span class="err">，则挑选合适的</span><span class="no">BeanName</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">candidateNames</span><span class="p">.</span><span class="nf">length</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+      <span class="no">List</span><span class="o">&lt;</span><span class="no">String</span><span class="o">&gt;</span> <span class="n">autowireCandidates</span> <span class="o">=</span> <span class="n">new</span> <span class="no">ArrayList</span><span class="o">&lt;</span><span class="no">String</span><span class="o">&gt;</span><span class="p">(</span><span class="n">candidateNames</span><span class="p">.</span><span class="nf">length</span><span class="p">);</span>
+      <span class="k">for</span> <span class="p">(</span><span class="no">String</span> <span class="n">beanName</span> <span class="p">:</span> <span class="n">candidateNames</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">containsBeanDefinition</span><span class="p">(</span><span class="n">beanName</span><span class="p">)</span> <span class="o">||</span> <span class="n">getBeanDefinition</span><span class="p">(</span><span class="n">beanName</span><span class="p">).</span><span class="nf">isAutowireCandidate</span><span class="p">())</span> <span class="p">{</span>
+              <span class="n">autowireCandidates</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="n">beanName</span><span class="p">);</span>
+          <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">autowireCandidates</span><span class="p">.</span><span class="nf">isEmpty</span><span class="p">())</span> <span class="p">{</span>
+          <span class="n">candidateNames</span> <span class="o">=</span> <span class="n">autowireCandidates</span><span class="p">.</span><span class="nf">toArray</span><span class="p">(</span><span class="n">new</span> <span class="no">String</span><span class="p">[</span><span class="n">autowireCandidates</span><span class="p">.</span><span class="nf">size</span><span class="p">()]);</span>
+      <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="sr">//</span><span class="err">如果只有一个</span><span class="no">BeanName</span> <span class="err">我们调用</span><span class="n">getBean</span><span class="err">方法来获取</span><span class="no">Bean</span><span class="err">实例来放入到</span><span class="no">NamedBeanHolder</span><span class="err">中</span>
+  <span class="sr">//</span><span class="err">这里获取</span><span class="n">bean</span><span class="err">是根据</span><span class="n">beanName</span><span class="err">，</span><span class="n">beanType</span><span class="err">和</span><span class="n">args</span><span class="err">来获取</span><span class="n">bean</span>
+  <span class="sr">//</span><span class="err">这里是我们要分析的重点</span> <span class="err">在下一篇文章中有介绍</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">candidateNames</span><span class="p">.</span><span class="nf">length</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+      <span class="no">String</span> <span class="n">beanName</span> <span class="o">=</span> <span class="n">candidateNames</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+      <span class="k">return</span> <span class="n">new</span> <span class="no">NamedBeanHolder</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">beanName</span><span class="p">,</span> <span class="n">getBean</span><span class="p">(</span><span class="n">beanName</span><span class="p">,</span> <span class="n">requiredType</span><span class="p">,</span> <span class="n">args</span><span class="p">));</span>
+  <span class="p">}</span>
+  <span class="sr">//</span><span class="err">如果合适的</span><span class="no">BeanName</span><span class="err">还是有多个的话</span>
+  <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">candidateNames</span><span class="p">.</span><span class="nf">length</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+      <span class="no">Map</span><span class="o">&lt;</span><span class="no">String</span><span class="p">,</span> <span class="no">Object</span><span class="o">&gt;</span> <span class="n">candidates</span> <span class="o">=</span> <span class="n">new</span> <span class="no">LinkedHashMap</span><span class="o">&lt;</span><span class="no">String</span><span class="p">,</span> <span class="no">Object</span><span class="o">&gt;</span><span class="p">(</span><span class="n">candidateNames</span><span class="p">.</span><span class="nf">length</span><span class="p">);</span>
+      <span class="k">for</span> <span class="p">(</span><span class="no">String</span> <span class="n">beanName</span> <span class="p">:</span> <span class="n">candidateNames</span><span class="p">)</span> <span class="p">{</span>
+          <span class="sr">//</span><span class="err">看看是不是已经创建多的单例</span><span class="no">Bean</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">containsSingleton</span><span class="p">(</span><span class="n">beanName</span><span class="p">))</span> <span class="p">{</span>
+              <span class="n">candidates</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="n">beanName</span><span class="p">,</span> <span class="n">getBean</span><span class="p">(</span><span class="n">beanName</span><span class="p">,</span> <span class="n">requiredType</span><span class="p">,</span> <span class="n">args</span><span class="p">));</span>
+          <span class="p">}</span>
+          <span class="k">else</span> <span class="p">{</span>
+              <span class="sr">//</span><span class="err">调用</span><span class="n">getType</span><span class="err">方法继续获取</span><span class="no">Bean</span><span class="err">实例</span>
+              <span class="n">candidates</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="n">beanName</span><span class="p">,</span> <span class="n">getType</span><span class="p">(</span><span class="n">beanName</span><span class="p">));</span>
+          <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="sr">//</span><span class="err">有多个</span><span class="no">Bean</span><span class="err">实例的话</span> <span class="err">则取带有</span><span class="no">Primary</span><span class="err">注解或者带有</span><span class="no">Primary</span><span class="err">信息的</span><span class="no">Bean</span>
+      <span class="no">String</span> <span class="n">candidateName</span> <span class="o">=</span> <span class="n">determinePrimaryCandidate</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">requiredType</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">candidateName</span> <span class="o">==</span> <span class="n">null</span><span class="p">)</span> <span class="p">{</span>
+          <span class="sr">//</span><span class="err">如果没有</span><span class="no">Primary</span><span class="err">注解或者</span><span class="no">Primary</span><span class="err">相关的信息，则去优先级高的</span><span class="no">Bean</span><span class="err">实例</span>
+          <span class="n">candidateName</span> <span class="o">=</span> <span class="n">determineHighestPriorityCandidate</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">requiredType</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">candidateName</span> <span class="o">!=</span> <span class="n">null</span><span class="p">)</span> <span class="p">{</span>
+          <span class="no">Object</span> <span class="n">beanInstance</span> <span class="o">=</span> <span class="n">candidates</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="n">candidateName</span><span class="p">);</span>
+          <span class="sr">//</span><span class="no">Class</span><span class="err">类型的话</span> <span class="err">继续调用</span><span class="n">getBean</span><span class="err">方法获取</span><span class="no">Bean</span><span class="err">实例</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">beanInstance</span> <span class="n">instanceof</span> <span class="no">Class</span><span class="p">)</span> <span class="p">{</span>
+              <span class="n">beanInstance</span> <span class="o">=</span> <span class="n">getBean</span><span class="p">(</span><span class="n">candidateName</span><span class="p">,</span> <span class="n">requiredType</span><span class="p">,</span> <span class="n">args</span><span class="p">);</span>
+          <span class="p">}</span>
+          <span class="k">return</span> <span class="n">new</span> <span class="no">NamedBeanHolder</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">candidateName</span><span class="p">,</span> <span class="p">(</span><span class="no">T</span><span class="p">)</span> <span class="n">beanInstance</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="sr">//</span><span class="err">都没有获取到</span> <span class="err">抛出异常</span>
+      <span class="kp">throw</span> <span class="n">new</span> <span class="no">NoUniqueBeanDefinitionException</span><span class="p">(</span><span class="n">requiredType</span><span class="p">,</span> <span class="n">candidates</span><span class="p">.</span><span class="nf">keySet</span><span class="p">());</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="n">null</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>在上面的代码中我们说我们传入的type是com.zkn.spring.learn.service.FactoryBeanService类型，但是在我们的Spring容器中却没有FactoryBeanService类型的Bean，那么我们是怎么从getBeanNamesForType获取到beanName的呢？ 
+getBeanNamesForType的分析</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="kp">public</span> <span class="no">String</span><span class="p">[]</span> <span class="n">getBeanNamesForType</span><span class="p">(</span><span class="no">Class</span><span class="o">&lt;</span><span class="sc">?&gt;</span> <span class="n">type</span><span class="p">,</span> <span class="n">boolean</span> <span class="n">includeNonSingletons</span><span class="p">,</span> <span class="n">boolean</span> <span class="n">allowEagerInit</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">isConfigurationFrozen</span><span class="p">()</span> <span class="o">||</span> <span class="n">type</span> <span class="o">==</span> <span class="n">null</span> <span class="o">||</span> <span class="o">!</span><span class="n">allowEagerInit</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">doGetBeanNamesForType</span><span class="p">(</span><span class="no">ResolvableType</span><span class="p">.</span><span class="nf">forRawClass</span><span class="p">(</span><span class="n">type</span><span class="p">),</span> <span class="n">includeNonSingletons</span><span class="p">,</span> <span class="n">allowEagerInit</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="sr">//</span><span class="err">先从缓存中获取</span>
+    <span class="no">Map</span><span class="o">&lt;</span><span class="no">Class</span><span class="o">&lt;</span><span class="sc">?&gt;</span><span class="p">,</span> <span class="no">String</span><span class="p">[]</span><span class="o">&gt;</span> <span class="n">cache</span> <span class="o">=</span>
+            <span class="p">(</span><span class="n">includeNonSingletons</span> <span class="p">?</span> <span class="n">this</span><span class="p">.</span><span class="nf">allBeanNamesByType</span> <span class="p">:</span> <span class="n">this</span><span class="p">.</span><span class="nf">singletonBeanNamesByType</span><span class="p">);</span>
+    <span class="no">String</span><span class="p">[]</span> <span class="n">resolvedBeanNames</span> <span class="o">=</span> <span class="n">cache</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="n">type</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">resolvedBeanNames</span> <span class="o">!=</span> <span class="n">null</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">resolvedBeanNames</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="sr">//</span><span class="err">调用</span><span class="n">doGetBeanNamesForType</span><span class="err">方法获取</span><span class="n">beanName</span>
+    <span class="n">resolvedBeanNames</span> <span class="o">=</span> <span class="n">doGetBeanNamesForType</span><span class="p">(</span><span class="no">ResolvableType</span><span class="p">.</span><span class="nf">forRawClass</span><span class="p">(</span><span class="n">type</span><span class="p">),</span> <span class="n">includeNonSingletons</span><span class="p">,</span> <span class="kp">true</span><span class="p">);</span>
+    <span class="sr">//</span><span class="err">所传入的类能不能被当前类加载加载</span>
+    <span class="k">if</span> <span class="p">(</span><span class="no">ClassUtils</span><span class="p">.</span><span class="nf">isCacheSafe</span><span class="p">(</span><span class="n">type</span><span class="p">,</span> <span class="n">getBeanClassLoader</span><span class="p">()))</span> <span class="p">{</span>
+        <span class="sr">//</span><span class="err">放入到缓存中，解析一次以后从缓存中获取</span>
+        <span class="sr">//</span><span class="err">这里对应到我们这里</span> <span class="n">key</span><span class="err">是</span><span class="no">FactoryBeanService</span> <span class="no">Value</span><span class="err">是</span><span class="n">beanFactoryLearn</span>
+        <span class="n">cache</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="n">type</span><span class="p">,</span> <span class="n">resolvedBeanNames</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">resolvedBeanNames</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p><strong>doGetBeanNamesForType</strong>的分析</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="kp">private</span> <span class="no">String</span><span class="p">[]</span> <span class="n">doGetBeanNamesForType</span><span class="p">(</span><span class="no">ResolvableType</span> <span class="n">type</span><span class="p">,</span> <span class="n">boolean</span> <span class="n">includeNonSingletons</span><span class="p">,</span> <span class="n">boolean</span> <span class="n">allowEagerInit</span><span class="p">)</span> <span class="p">{</span>
+  <span class="no">List</span><span class="o">&lt;</span><span class="no">String</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">new</span> <span class="no">ArrayList</span><span class="o">&lt;</span><span class="no">String</span><span class="o">&gt;</span><span class="p">();</span>
+  <span class="sr">//</span><span class="err">循环所有的</span><span class="n">beanName</span> <span class="err">这个是在</span><span class="no">Spring</span><span class="err">容器启动解析</span><span class="no">Bean</span><span class="err">的时候放入到这个</span><span class="no">List</span><span class="err">中的</span>
+  <span class="k">for</span> <span class="p">(</span><span class="no">String</span> <span class="n">beanName</span> <span class="p">:</span> <span class="n">this</span><span class="p">.</span><span class="nf">beanDefinitionNames</span><span class="p">)</span> <span class="p">{</span>
+      <span class="sr">//</span><span class="err">不是别名</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">isAlias</span><span class="p">(</span><span class="n">beanName</span><span class="p">))</span> <span class="p">{</span>
+          <span class="n">try</span> <span class="p">{</span>
+              <span class="sr">//</span><span class="err">根据</span><span class="n">beanName</span><span class="err">获取</span><span class="no">RootBeanDefinition</span>
+              <span class="no">RootBeanDefinition</span> <span class="n">mbd</span> <span class="o">=</span> <span class="n">getMergedLocalBeanDefinition</span><span class="p">(</span><span class="n">beanName</span><span class="p">);</span>
+              <span class="sr">//</span><span class="no">RootBeanDefinition</span><span class="err">中的</span><span class="no">Bean</span><span class="err">不是抽象类、非延迟初始化</span> 
+              <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">mbd</span><span class="p">.</span><span class="nf">isAbstract</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">allowEagerInit</span> <span class="o">||</span>
+                      <span class="p">((</span><span class="n">mbd</span><span class="p">.</span><span class="nf">hasBeanClass</span><span class="p">()</span> <span class="o">||</span> <span class="o">!</span><span class="n">mbd</span><span class="p">.</span><span class="nf">isLazyInit</span><span class="p">()</span> <span class="o">||</span> <span class="n">isAllowEagerClassLoading</span><span class="p">()))</span> <span class="o">&amp;&amp;</span>
+                              <span class="o">!</span><span class="n">requiresEagerInitForType</span><span class="p">(</span><span class="n">mbd</span><span class="p">.</span><span class="nf">getFactoryBeanName</span><span class="p">())))</span> <span class="p">{</span>
+                  <span class="sr">//</span><span class="err">是不是</span><span class="no">FactoryBean</span><span class="err">的子类</span>
+                  <span class="n">boolean</span> <span class="n">isFactoryBean</span> <span class="o">=</span> <span class="n">isFactoryBean</span><span class="p">(</span><span class="n">beanName</span><span class="p">,</span> <span class="n">mbd</span><span class="p">);</span>
+                  <span class="no">BeanDefinitionHolder</span> <span class="n">dbd</span> <span class="o">=</span> <span class="n">mbd</span><span class="p">.</span><span class="nf">getDecoratedDefinition</span><span class="p">();</span>
+                  <span class="sr">//</span><span class="err">这里我们其他的几个变量的意思都差不多</span>  <span class="err">我们需要重点关注的是</span><span class="n">isTypeMatch</span><span class="err">这个方法</span> 
+                  <span class="sr">//</span><span class="err">如果</span><span class="n">isTypeMatch</span><span class="err">这个方法返回</span><span class="n">true</span><span class="err">的话，我们会把这个</span><span class="n">beanName</span><span class="err">即</span><span class="n">factoryBeanLearn</span> <span class="err">放入到</span><span class="n">result</span><span class="err">中返回</span>
+                  <span class="n">boolean</span> <span class="n">matchFound</span> <span class="o">=</span>
+                          <span class="p">(</span><span class="n">allowEagerInit</span> <span class="o">||</span> <span class="o">!</span><span class="n">isFactoryBean</span> <span class="o">||</span>
+                                  <span class="p">(</span><span class="n">dbd</span> <span class="o">!=</span> <span class="n">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">mbd</span><span class="p">.</span><span class="nf">isLazyInit</span><span class="p">())</span> <span class="o">||</span> <span class="n">containsSingleton</span><span class="p">(</span><span class="n">beanName</span><span class="p">))</span> <span class="o">&amp;&amp;</span>
+                          <span class="p">(</span><span class="n">includeNonSingletons</span> <span class="o">||</span>
+                                  <span class="p">(</span><span class="n">dbd</span> <span class="o">!=</span> <span class="n">null</span> <span class="p">?</span> <span class="n">mbd</span><span class="p">.</span><span class="nf">isSingleton</span><span class="p">()</span> <span class="p">:</span> <span class="n">isSingleton</span><span class="p">(</span><span class="n">beanName</span><span class="p">)))</span> <span class="o">&amp;&amp;</span>
+                          <span class="n">isTypeMatch</span><span class="p">(</span><span class="n">beanName</span><span class="p">,</span> <span class="n">type</span><span class="p">);</span>
+                  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">matchFound</span> <span class="o">&amp;&amp;</span> <span class="n">isFactoryBean</span><span class="p">)</span> <span class="p">{</span>
+                      <span class="sr">//</span><span class="err">如果不匹配，还是</span><span class="no">FactoryBean</span><span class="err">的子类</span> <span class="err">这里会把</span><span class="n">beanName</span><span class="err">变为</span> <span class="o">&amp;</span><span class="n">beanName</span>
+                      <span class="n">beanName</span> <span class="o">=</span> <span class="no">FACTORY_BEAN_PREFIX</span> <span class="o">+</span> <span class="n">beanName</span><span class="p">;</span>
+                      <span class="sr">//</span><span class="err">判断类型匹配不匹配</span>
+                      <span class="n">matchFound</span> <span class="o">=</span> <span class="p">(</span><span class="n">includeNonSingletons</span> <span class="o">||</span> <span class="n">mbd</span><span class="p">.</span><span class="nf">isSingleton</span><span class="p">())</span> <span class="o">&amp;&amp;</span> <span class="n">isTypeMatch</span><span class="p">(</span><span class="n">beanName</span><span class="p">,</span> <span class="n">type</span><span class="p">);</span>
+                  <span class="p">}</span>
+                  <span class="k">if</span> <span class="p">(</span><span class="n">matchFound</span><span class="p">)</span> <span class="p">{</span>
+                      <span class="n">result</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="n">beanName</span><span class="p">);</span>
+                  <span class="p">}</span>
+              <span class="p">}</span>
+          <span class="p">}</span>
+      <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="sr">//</span><span class="err">这里的</span><span class="no">Bean</span><span class="err">是</span><span class="no">Spring</span><span class="err">容器创建的特殊的几种类型的</span><span class="no">Bean</span> <span class="err">像</span><span class="no">Environment</span>
+  <span class="k">for</span> <span class="p">(</span><span class="no">String</span> <span class="n">beanName</span> <span class="p">:</span> <span class="n">this</span><span class="p">.</span><span class="nf">manualSingletonNames</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">try</span> <span class="p">{</span>
+          <span class="sr">//</span> <span class="no">In</span> <span class="k">case</span> <span class="n">of</span> <span class="no">FactoryBean</span><span class="p">,</span> <span class="n">match</span> <span class="n">object</span> <span class="n">created</span> <span class="n">by</span> <span class="no">FactoryBean</span><span class="p">.</span>
+          <span class="nf">if</span> <span class="p">(</span><span class="n">isFactoryBean</span><span class="p">(</span><span class="n">beanName</span><span class="p">))</span> <span class="p">{</span>
+              <span class="k">if</span> <span class="p">((</span><span class="n">includeNonSingletons</span> <span class="o">||</span> <span class="n">isSingleton</span><span class="p">(</span><span class="n">beanName</span><span class="p">))</span> <span class="o">&amp;&amp;</span> <span class="n">isTypeMatch</span><span class="p">(</span><span class="n">beanName</span><span class="p">,</span> <span class="n">type</span><span class="p">))</span> <span class="p">{</span>
+                  <span class="n">result</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="n">beanName</span><span class="p">);</span>
+                  <span class="sr">//</span> <span class="no">Match</span> <span class="n">found</span> <span class="k">for</span> <span class="n">this</span> <span class="ss">bean: </span><span class="k">do</span> <span class="n">not</span> <span class="n">match</span> <span class="no">FactoryBean</span> <span class="n">itself</span> <span class="n">anymore</span><span class="p">.</span>
+                  <span class="nf">continue</span><span class="p">;</span>
+              <span class="p">}</span>
+              <span class="sr">//</span> <span class="no">In</span> <span class="k">case</span> <span class="n">of</span> <span class="no">FactoryBean</span><span class="p">,</span> <span class="n">try</span> <span class="n">to</span> <span class="n">match</span> <span class="no">FactoryBean</span> <span class="n">itself</span> <span class="k">next</span><span class="p">.</span>
+              <span class="nf">beanName</span> <span class="o">=</span> <span class="no">FACTORY_BEAN_PREFIX</span> <span class="o">+</span> <span class="n">beanName</span><span class="p">;</span>
+          <span class="p">}</span>
+          <span class="sr">//</span> <span class="no">Match</span> <span class="n">raw</span> <span class="n">bean</span> <span class="n">instance</span> <span class="p">(</span><span class="n">might</span> <span class="n">be</span> <span class="n">raw</span> <span class="no">FactoryBean</span><span class="p">).</span>
+          <span class="nf">if</span> <span class="p">(</span><span class="n">isTypeMatch</span><span class="p">(</span><span class="n">beanName</span><span class="p">,</span> <span class="n">type</span><span class="p">))</span> <span class="p">{</span>
+              <span class="n">result</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="n">beanName</span><span class="p">);</span>
+          <span class="p">}</span>
+      <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="no">StringUtils</span><span class="p">.</span><span class="nf">toStringArray</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>在上面的代码中，我们可以知道的是我们的FactoryBeanLearn是一个FactoryBean类型的类。所以在上面的代码中会调用isTypeMatch这个方法来判断FactoryBeanLearn是不是和我们传入的类型相匹配。这里是值：FactoryBeanService类。我们去isTypeMatch方法中去看一下它是怎么进行类型匹配判断的：由于isTypeMatch方法很长，这里我们只看和我们这次分析相关的一部分代码</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+ <span class="kp">public</span> <span class="n">boolean</span> <span class="n">isTypeMatch</span><span class="p">(</span><span class="no">String</span> <span class="nb">name</span><span class="p">,</span> <span class="no">ResolvableType</span> <span class="n">typeToMatch</span><span class="p">)</span> <span class="n">throws</span> <span class="no">NoSuchBeanDefinitionException</span> <span class="p">{</span>
+<span class="sr">//</span><span class="err">转换</span><span class="n">beanName</span>   <span class="err">这里我们可以知道我们的</span><span class="n">beanName</span><span class="err">为</span><span class="n">factoryBeanLearn</span> <span class="err">因为上面是循环了</span><span class="no">Spring</span><span class="err">容器中的所有的</span><span class="no">Bean</span>
+<span class="no">String</span> <span class="n">beanName</span> <span class="o">=</span> <span class="n">transformedBeanName</span><span class="p">(</span><span class="nb">name</span><span class="p">);</span>
+<span class="sr">//</span><span class="err">因为我们这里是用的</span><span class="no">AbstractApplicationContext</span><span class="err">的子类来从</span><span class="no">Spring</span><span class="err">容器中获取</span><span class="no">Bean</span>
+<span class="sr">//</span><span class="err">获取</span><span class="n">beanName</span><span class="err">为</span><span class="n">factoryBeanLearn</span><span class="err">的</span><span class="no">Bean</span><span class="err">实例</span> <span class="err">这里是可以获取到</span><span class="no">Bean</span><span class="err">实例的</span>
+<span class="sr">//</span><span class="err">这里有一个问题：使用</span><span class="no">AbstractApplicationContext</span><span class="err">的子类从</span><span class="no">Spring</span><span class="err">容器中获取</span><span class="no">Bean</span><span class="err">和</span>
+<span class="sr">//</span><span class="err">使用</span><span class="no">BeanFactory</span><span class="err">的子类从容器中获取</span><span class="no">Bean</span><span class="err">有什么区别？这个可以思考一下</span>
+<span class="no">Object</span> <span class="n">beanInstance</span> <span class="o">=</span> <span class="n">getSingleton</span><span class="p">(</span><span class="n">beanName</span><span class="p">,</span> <span class="kp">false</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">beanInstance</span> <span class="o">!=</span> <span class="n">null</span><span class="p">)</span> <span class="p">{</span>
+    <span class="sr">//</span><span class="n">factoryBeanLearn</span><span class="err">是</span><span class="no">FactoryBean</span><span class="err">的一个实现类</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">beanInstance</span> <span class="n">instanceof</span> <span class="no">FactoryBean</span><span class="p">)</span> <span class="p">{</span>
+        <span class="sr">//</span><span class="err">这里判断</span><span class="n">beanName</span><span class="err">是不是以</span><span class="o">&amp;</span><span class="err">开头</span>  <span class="err">这里明显不是</span> <span class="err">这里可以想一下什么情况下会有</span><span class="o">&amp;</span><span class="err">开头的</span><span class="no">Bean</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="no">BeanFactoryUtils</span><span class="p">.</span><span class="nf">isFactoryDereference</span><span class="p">(</span><span class="nb">name</span><span class="p">))</span> <span class="p">{</span>
+            <span class="sr">//</span><span class="err">这里就是从</span><span class="n">factoryBeanLearn</span><span class="err">中获</span><span class="n">type</span><span class="err">类型</span> <span class="err">我们在下面会分析一下这个类</span>
+            <span class="no">Class</span><span class="o">&lt;</span><span class="sc">?&gt;</span> <span class="n">type</span> <span class="o">=</span> <span class="n">getTypeForFactoryBean</span><span class="p">((</span><span class="no">FactoryBean</span><span class="o">&lt;</span><span class="sc">?&gt;</span><span class="p">)</span> <span class="n">beanInstance</span><span class="p">);</span>
+            <span class="sr">//</span><span class="err">从</span><span class="n">factoryBeanLearn</span><span class="err">中获取到的</span><span class="n">type</span><span class="err">类型和我们传入的类型是不是同一种类型</span> <span class="err">是的话直接返回</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">type</span> <span class="o">!=</span> <span class="n">null</span> <span class="o">&amp;&amp;</span> <span class="n">typeToMatch</span><span class="p">.</span><span class="nf">isAssignableFrom</span><span class="p">(</span><span class="n">type</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">typeToMatch</span><span class="p">.</span><span class="nf">isInstance</span><span class="p">(</span><span class="n">beanInstance</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span></code></pre></figure>
+
+<p><strong>getTypeForFactoryBean</strong></p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+ <span class="kp">protected</span> <span class="no">Class</span><span class="o">&lt;</span><span class="sc">?&gt;</span> <span class="n">getTypeForFactoryBean</span><span class="p">(</span><span class="n">final</span> <span class="no">FactoryBean</span><span class="o">&lt;</span><span class="sc">?&gt;</span> <span class="n">factoryBean</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">try</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="no">System</span><span class="p">.</span><span class="nf">getSecurityManager</span><span class="p">()</span> <span class="o">!=</span> <span class="n">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="no">AccessController</span><span class="p">.</span><span class="nf">doPrivileged</span><span class="p">(</span><span class="n">new</span> <span class="no">PrivilegedAction</span><span class="o">&lt;</span><span class="no">Class</span><span class="o">&lt;</span><span class="sc">?&gt;</span><span class="o">&gt;</span><span class="p">()</span> <span class="p">{</span>
+                <span class="vi">@Override</span>
+                <span class="kp">public</span> <span class="no">Class</span><span class="o">&lt;</span><span class="sc">?&gt;</span> <span class="n">run</span><span class="p">()</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="n">factoryBean</span><span class="p">.</span><span class="nf">getObjectType</span><span class="p">();</span>
+                <span class="p">}</span>
+            <span class="p">},</span> <span class="n">getAccessControlContext</span><span class="p">());</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+            <span class="sr">//</span><span class="err">看到这里是不是很熟悉了</span> <span class="err">调用</span><span class="no">FactoryBean</span><span class="err">实例的</span><span class="n">getObjectType</span><span class="p">()</span><span class="err">方法</span>
+            <span class="k">return</span> <span class="n">factoryBean</span><span class="p">.</span><span class="nf">getObjectType</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>我们在调用factoryBeanLearn的getObjectType方法的时候，获取到的值为：com.zkn.spring.learn.service.FactoryBeanService和我们传入的type是一样的类型。所以这里返回true，<strong>根据我们上面说的如果isTypeMatch返回true的话，我们返回的beanName为factoryBeanLearn</strong>。</p>
+<blockquote>
+  <p>上面的分析总结起来是：我们调用getBean(Class requiredType)方法根据类型来获取容器中的bean的时候，对应我们的例子就是：根据类型com.zkn.spring.learn.service.FactoryBeanService来从Spring容器中获取Bean(首先明确的一点是在Spring容器中没有FactoryBeanService类型的BeanDefinition。但是却有一个Bean和FactoryBeanService这个类型有一些关系)。<strong>Spring在根据type去获取Bean的时候，会先获取到beanName</strong>。获取beanName的过程是：先循环Spring容器中的所有的beanName，然后根据beanName获取对应的BeanDefinition，如果当前bean是FactoryBean的类型，则会从Spring容器中根据beanName获取对应的Bean实例，接着调用获取到的Bean实例的getObjectType方法获取到Class类型，判断此Class类型和我们传入的Class是否是同一类型。如果是则返回测beanName，对应到我们这里就是：根据factoryBeanLearn获取到FactoryBeanLearn实例，调用FactoryBeanLearn的getObjectType方法获取到返回值FactoryBeanService.class。和我们传入的类型一致，<strong>所以这里获取的beanName为factoryBeanLearn</strong>。换句话说这里我们把factoryBeanLearn这个beanName映射为了：FactoryBeanService类型。<strong>即FactoryBeanService类型对应的beanName为factoryBeanLearn</strong>。</p>
+</blockquote>
+:ET

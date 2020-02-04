@@ -1,0 +1,106 @@
+I"o'<p>在Java 中我们有4种常用的方式创建对象</p>
+<ol>
+  <li>通过 new 创建</li>
+  <li>通过反射创建</li>
+  <li>通过cloneable接口创建</li>
+  <li>通过反序列化获取对象</li>
+</ol>
+
+<p>com.lwx.fourInstance.InstanceDemo.java</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="kp">public</span> <span class="n">interface</span> <span class="no">InstanceDemo</span> <span class="p">{</span>
+
+    <span class="no">String</span> <span class="n">toString</span><span class="p">();</span>
+    <span class="n">void</span> <span class="nb">print</span><span class="p">(</span><span class="no">String</span> <span class="n">args</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p><br /></p>
+
+<p>com.lwx.fourInstance.InstanceDemoImpl.java</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="nf">io</span><span class="o">.</span><span class="no">Serializable</span><span class="p">;</span>
+
+<span class="sr">//</span><span class="no">Cloneable</span><span class="err">只有使用第三种方法才用到，</span><span class="no">Serializable</span><span class="err">只有使用第四种才用到</span>
+<span class="kp">public</span> <span class="k">class</span> <span class="nc">InstanceDemoImpl</span> <span class="n">implements</span> <span class="no">InstanceDemo</span><span class="p">,</span> <span class="no">Cloneable</span><span class="p">,</span> <span class="no">Serializable</span> <span class="p">{</span>
+
+    <span class="vi">@Override</span>
+    <span class="kp">public</span> <span class="n">void</span> <span class="nb">print</span><span class="p">(</span><span class="no">String</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+        <span class="no">System</span><span class="p">.</span><span class="nf">out</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s2">"out: + "</span> <span class="o">+</span> <span class="n">args</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="vi">@Override</span>
+    <span class="kp">protected</span> <span class="no">InstanceDemoImpl</span> <span class="nb">clone</span><span class="p">()</span> <span class="n">throws</span> <span class="no">CloneNotSupportedException</span> <span class="p">{</span>
+        <span class="sr">//</span> <span class="no">TODO</span> <span class="no">Auto</span><span class="o">-</span><span class="n">generated</span> <span class="nb">method</span> <span class="n">stub</span>
+        <span class="k">return</span> <span class="p">(</span><span class="no">InstanceDemoImpl</span><span class="p">)</span> <span class="k">super</span><span class="p">.</span><span class="nf">clone</span><span class="p">();</span>
+
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p><br /></p>
+
+<p>com.lwx.fourInstance.Main.java</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="n">package</span> <span class="n">com</span><span class="p">.</span><span class="nf">lwx</span><span class="p">.</span><span class="nf">fourInstance</span><span class="p">;</span>
+<span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="nf">io</span><span class="p">.</span><span class="nf">*</span><span class="p">;</span>
+
+<span class="kp">public</span> <span class="k">class</span> <span class="nc">Main</span> <span class="p">{</span>
+
+    <span class="kp">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="p">(</span><span class="no">String</span><span class="p">[]</span> <span class="n">args</span><span class="p">){</span>
+	<span class="sr">//</span> <span class="n">write</span> <span class="n">your</span> <span class="n">code</span> <span class="n">here</span>
+        <span class="sr">//</span><span class="err">第一种</span>
+        <span class="n">new</span> <span class="no">InstanceDemoImpl</span><span class="p">().</span><span class="nf">print</span><span class="p">(</span><span class="s2">"LWX---new 创建"</span><span class="p">);</span>
+
+        <span class="sr">//</span><span class="err">第二种</span>
+        <span class="n">try</span><span class="p">{</span>
+            <span class="no">Class</span> <span class="n">clazz</span> <span class="o">=</span> <span class="no">Class</span><span class="p">.</span><span class="nf">forName</span><span class="p">(</span><span class="s2">"com.lwx.fourInstance.InstanceDemoImpl"</span><span class="p">);</span>
+            <span class="no">InstanceDemoImpl</span> <span class="n">demo</span> <span class="o">=</span> <span class="p">(</span><span class="no">InstanceDemoImpl</span><span class="p">)</span> <span class="n">clazz</span><span class="p">.</span><span class="nf">newInstance</span><span class="p">();</span>
+            <span class="n">demo</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s2">"LWX---反射创建"</span><span class="p">);</span>
+        <span class="p">}</span><span class="kp">catch</span> <span class="p">(</span><span class="no">ClassNotFoundException</span> <span class="o">|</span> <span class="no">IllegalAccessException</span> <span class="o">|</span> <span class="no">InstantiationException</span> <span class="n">e</span><span class="p">){</span>
+            <span class="n">e</span><span class="p">.</span><span class="nf">printStackTrace</span><span class="p">();</span>
+        <span class="p">}</span>
+
+        <span class="sr">//</span><span class="err">第三种实现</span><span class="no">Cloneable</span><span class="err">接口</span>
+        <span class="no">InstanceDemoImpl</span> <span class="n">instanceDemo</span> <span class="o">=</span> <span class="n">new</span> <span class="no">InstanceDemoImpl</span><span class="p">();</span>
+        <span class="n">try</span><span class="p">{</span>
+            <span class="n">instanceDemo</span><span class="p">.</span><span class="nf">clone</span><span class="p">().</span><span class="nf">print</span><span class="p">(</span><span class="s2">"LWX---Clone接口创建"</span><span class="p">);</span>
+
+        <span class="p">}</span><span class="kp">catch</span> <span class="p">(</span><span class="no">CloneNotSupportedException</span> <span class="n">e</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">e</span><span class="p">.</span><span class="nf">printStackTrace</span><span class="p">();</span>
+        <span class="p">}</span>
+
+
+        <span class="sr">//</span><span class="err">第四种序列化机制实现</span><span class="no">Serializable</span><span class="err">接口</span>
+        <span class="no">InstanceDemoImpl</span> <span class="n">demo</span> <span class="o">=</span> <span class="n">new</span> <span class="no">InstanceDemoImpl</span><span class="p">();</span>
+        <span class="no">File</span> <span class="n">f</span> <span class="o">=</span> <span class="n">new</span> <span class="no">File</span><span class="p">(</span><span class="s2">"Instance.obj"</span><span class="p">);</span>
+        <span class="n">try</span><span class="p">{</span>
+
+            <span class="no">FileOutputStream</span> <span class="n">fos</span> <span class="o">=</span> <span class="n">new</span> <span class="no">FileOutputStream</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+            <span class="no">ObjectOutputStream</span>  <span class="n">oos</span> <span class="o">=</span> <span class="n">new</span> <span class="no">ObjectOutputStream</span><span class="p">(</span><span class="n">fos</span><span class="p">);</span>
+
+            <span class="no">FileInputStream</span> <span class="n">fis</span> <span class="o">=</span> <span class="n">new</span> <span class="no">FileInputStream</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+            <span class="no">ObjectInputStream</span> <span class="n">ois</span> <span class="o">=</span> <span class="n">new</span> <span class="no">ObjectInputStream</span><span class="p">(</span><span class="n">fis</span><span class="p">);</span>
+
+            <span class="n">oos</span><span class="p">.</span><span class="nf">writeObject</span><span class="p">(</span><span class="n">demo</span><span class="p">);</span>
+            <span class="no">InstanceDemoImpl</span> <span class="n">instanceDemo1</span> <span class="o">=</span> <span class="p">(</span><span class="no">InstanceDemoImpl</span><span class="p">)</span> <span class="n">ois</span><span class="p">.</span><span class="nf">readObject</span><span class="p">();</span>
+            <span class="n">instanceDemo1</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s2">"LWX---反序列化创建"</span><span class="p">);</span>
+
+        <span class="p">}</span><span class="kp">catch</span> <span class="p">(</span><span class="no">IOException</span> <span class="o">|</span> <span class="no">ClassNotFoundException</span> <span class="n">e</span><span class="p">){</span>
+            <span class="n">e</span><span class="p">.</span><span class="nf">printStackTrace</span><span class="p">();</span>
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>out: + LWX---new 创建
+
+out: + LWX---反射创建
+
+out: + LWX---Clone接口创建
+
+out: + LWX---反序列化创建    
+</code></pre></div></div>
+:ET
