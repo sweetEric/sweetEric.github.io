@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Redis 的几种常见使用场景"
-date:   2019-04-05 28:10:51 +0800
+date:   2019-09-16 22:10:51 +0800
 categories: Summary
 tags: SpringBoot Redis
 description: 具体分析redis的集几种数据类型的不同和相关使用场景

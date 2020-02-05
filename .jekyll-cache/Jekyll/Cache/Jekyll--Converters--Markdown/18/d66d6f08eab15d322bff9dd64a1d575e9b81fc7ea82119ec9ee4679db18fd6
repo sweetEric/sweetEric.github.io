@@ -20,6 +20,7 @@
 <p>com.lwx.fourInstance.InstanceDemoImpl.java</p>
 
 <figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="n">package</span> <span class="n">com</span><span class="p">.</span><span class="nf">lwx</span><span class="p">.</span><span class="nf">fourInstance</span><span class="p">;</span>
 <span class="n">import</span> <span class="n">java</span><span class="p">.</span><span class="nf">io</span><span class="o">.</span><span class="no">Serializable</span><span class="p">;</span>
 
 <span class="sr">//</span><span class="no">Cloneable</span><span class="err">只有使用第三种方法才用到，</span><span class="no">Serializable</span><span class="err">只有使用第四种才用到</span>

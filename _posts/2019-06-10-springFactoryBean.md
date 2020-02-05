@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Spring系列之FactoryBean"
-date:   2019-05-01 21:26:51 +0800
+date:   2019-06-10 22:26:51 +0800
 categories: Summary
 tags: SpringBoot
 author: Eric

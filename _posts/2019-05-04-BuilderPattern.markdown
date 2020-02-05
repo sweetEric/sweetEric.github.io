@@ -1,9 +1,10 @@
 ---
 layout: post
 title:  "建造者模式"
-date:   2019-06-05 14:10:51 +0800
+date:   2019-05-04 23:20:21 +0800
 categories: Summary
 tags: Java 设计模式
+author: Eric
 description: Java设计模式
 ---
 
